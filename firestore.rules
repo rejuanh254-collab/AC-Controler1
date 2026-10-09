@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUserSettings(data) {
+      return data.keys().hasAll(['userId', 'power', 'temperature', 'mode', 'fanSpeed', 'displayLight', 'updatedAt']) &&
+             data.userId == request.auth.uid &&
+             data.power is bool &&
+             data.temperature is number &&
+             data.temperature >= 16 && data.temperature <= 32 &&
+             data.mode is string && data.mode.size() <= 20 &&
+             data.fanSpeed is string && data.fanSpeed.size() <= 20 &&
+             data.displayLight is bool &&
+             data.updatedAt is string && data.updatedAt.size() <= 64;
+    }
+
+    match /users/{userId}/settings/acState {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId) && isOwner(userId) && isValidUserSettings(incoming());
+      allow update: if isValidId(userId) && isOwner(userId) && incoming().userId == existing().userId && isValidUserSettings(incoming());
+      allow delete: if isValidId(userId) && isOwner(userId);
+    }
+  }
+}

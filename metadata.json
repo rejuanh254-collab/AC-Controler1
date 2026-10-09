@@ -1,0 +1,6 @@
+{
+  "name": "CoolHome AC - Smart Air Conditioner Controller & ESP32 IoT Hub",
+  "description": "Dedicated Smart AC Controller with real-time hardware sync (ESP32 IR Blaster, Local WiFi & Cloud), multi-brand IR support (Gree, Walton, General, Midea, Carrier, Panasonic, LG, Daikin), thermostat dials, climate sensor, voice control (Bangla/English), smart timers, and energy meter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

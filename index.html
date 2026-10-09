@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CoolHome AC" />
+    <meta name="application-name" content="CoolHome AC" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="alternate" type="application/manifest+json" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <script>
+      // Suppress Vite HMR WebSocket connection errors in preview iframe environment
+      window.addEventListener('unhandledrejection', function (e) {
+        var reason = e && (e.reason || e);
+        var msg = reason && (reason.message || String(reason));
+        var stack = reason && (reason.stack || '');
+        if (
+          (msg && (
+            msg.includes('WebSocket') ||
+            msg.includes('@vite/client') ||
+            msg.includes('vite') ||
+            msg.includes('closed without opened')
+          )) ||
+          stack.includes('@vite/client')
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+
+      window.addEventListener('error', function (e) {
+        var msg = e && (e.message || String(e));
+        var fn = (e && e.filename) || '';
+        if (
+          fn.includes('@vite/client') ||
+          (msg && (
+            msg.includes('WebSocket') ||
+            msg.includes('@vite/client') ||
+            msg.includes('vite') ||
+            msg.includes('closed without opened')
+          ))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          return true;
+        }
+      }, true);
+
+      // Early listener for PWA 1-click installation before React components load
+      window.__deferredPWAInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function (e) {
+        // Save prompt event so in-app 1-click button can invoke prompt()
+        window.__deferredPWAInstallPrompt = e;
+        window.dispatchEvent(new CustomEvent('pwa-prompt-ready', { detail: e }));
+      });
+    </script>
+    <title>CoolHome AC - Smart Air Conditioner Controller & ESP32 IoT Hub</title>
+    <meta name="description" content="Dedicated Smart AC Controller with real-time hardware sync (ESP32 IR Blaster, Local WiFi & Cloud), multi-brand IR support (Gree, Walton, General, Midea, Carrier, Panasonic, LG, Daikin), thermostat dials, climate sensor, voice control (Bangla/English), smart timers, and energy meter." />
+    <meta property="og:title" content="CoolHome AC - Smart Air Conditioner Controller & ESP32 IoT Hub" />
+    <meta property="og:description" content="Dedicated Smart AC Controller with real-time hardware sync (ESP32 IR Blaster, Local WiFi & Cloud), multi-brand IR support (Gree, Walton, General, Midea, Carrier, Panasonic, LG, Daikin), thermostat dials, climate sensor, voice control (Bangla/English), smart timers, and energy meter." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white min-h-screen overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

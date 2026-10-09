@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "UserSettings": {
+      "title": "UserSettings",
+      "description": "User specific smart AC persistent configuration and last state",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who owns this configuration"
+        },
+        "power": {
+          "type": "boolean",
+          "description": "AC power state"
+        },
+        "temperature": {
+          "type": "number",
+          "description": "AC target temperature"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Operating mode (cool, eco, fan, dry, heat, auto)"
+        },
+        "fanSpeed": {
+          "type": "string",
+          "description": "Fan speed (auto, low, medium, high, quiet)"
+        },
+        "turbo": {
+          "type": "boolean",
+          "description": "Turbo mode state"
+        },
+        "eco": {
+          "type": "boolean",
+          "description": "Eco mode state"
+        },
+        "sleep": {
+          "type": "boolean",
+          "description": "Sleep mode state"
+        },
+        "displayLight": {
+          "type": "boolean",
+          "description": "AC display LED state"
+        },
+        "ionFilter": {
+          "type": "boolean",
+          "description": "Ionizer health filter state"
+        },
+        "quiet": {
+          "type": "boolean",
+          "description": "Quiet mode state"
+        },
+        "swingV": {
+          "type": "string",
+          "description": "Vertical swing state"
+        },
+        "swingH": {
+          "type": "string",
+          "description": "Horizontal swing state"
+        },
+        "brand": {
+          "type": "string",
+          "description": "AC brand"
+        },
+        "deviceName": {
+          "type": "string",
+          "description": "Custom AC device name"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["userId", "power", "temperature", "mode", "fanSpeed", "displayLight", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/settings/acState": {
+      "schema": "UserSettings",
+      "description": "User AC settings and last saved preferences"
+    }
+  }
+}

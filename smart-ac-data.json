@@ -1,0 +1,1394 @@
+{
+  "acState": {
+    "id": "",
+    "isPaired": true,
+    "deviceName": "Gree AC",
+    "deviceModel": "",
+    "location": "Master Bedroom",
+    "isOnline": true,
+    "power": true,
+    "temperature": 25,
+    "mode": "cool",
+    "fanSpeed": "low",
+    "swingV": "middle",
+    "swingH": "right",
+    "turbo": false,
+    "eco": false,
+    "sleep": false,
+    "displayLight": true,
+    "ionFilter": true,
+    "autoClean": false,
+    "filterCleanHours": 0,
+    "quiet": false,
+    "locked": false,
+    "brand": "Gree",
+    "timerOffMinutes": 0,
+    "timerOnMinutes": 0,
+    "lastIrCommand": "SELF-CLEAN CYCLE CANCELLED",
+    "lastIrHex": "0xGR01010119CE",
+    "lastUpdated": "2026-10-08T16:49:02.776Z",
+    "multiStageTimer": {
+      "enabled": true,
+      "currentStageIndex": 0,
+      "currentStage": 1,
+      "remainingMinutes": 44.6,
+      "stages": [
+        {
+          "id": "stg-1",
+          "stageNumber": 1,
+          "temperature": 25,
+          "durationMinutes": 60,
+          "action": "change_temp",
+          "mode": "cool",
+          "fanSpeed": "low",
+          "displayLight": true
+        },
+        {
+          "id": "stg-2",
+          "stageNumber": 2,
+          "temperature": 27,
+          "durationMinutes": 300,
+          "action": "turn_off",
+          "mode": "cool",
+          "fanSpeed": "low",
+          "displayLight": false
+        }
+      ],
+      "finalAction": "turn_off",
+      "stage3Temp": 27,
+      "startedAt": "2026-10-08T16:33:31.026Z",
+      "stageStartedAt": "2026-10-08T16:33:31.026Z",
+      "paused": false,
+      "stage1": {
+        "temperature": 25,
+        "durationMinutes": 60
+      },
+      "stage2Action": "change_temp",
+      "stage2": {
+        "temperature": 27,
+        "durationMinutes": 300
+      }
+    },
+    "health": true,
+    "isCleaning": false,
+    "cleanCycleRemainingMinutes": 0
+  },
+  "directConfig": {
+    "activeMethod": "gree_cloud",
+    "greeEmail": "rejuanh254@gmail.com",
+    "greeRegion": "asia",
+    "greeDeviceMac": "c0393792cb97",
+    "tuyaDeviceId": "",
+    "tuyaLocalKey": "",
+    "tuyaCloudClientId": "",
+    "tuyaCloudSecret": "",
+    "tuyaRegion": "us",
+    "acLocalIp": "",
+    "acPort": 7000,
+    "acKey": "",
+    "broadlinkIp": "",
+    "broadlinkMac": "",
+    "webhookUrl": "",
+    "haAccessToken": "",
+    "haEntityId": "",
+    "connected": true,
+    "lastSync": "2026-09-26T02:48:32.154Z",
+    "lastStatusMessage": "No AC device connected",
+    "greeCloudToken": ""
+  },
+  "greeCloudSession": {
+    "loggedIn": true,
+    "email": "rejuanh254@gmail.com",
+    "region": "asia",
+    "token": "c5573f6a074a21d2308dbe41bc52dbd6",
+    "boundMac": "c0393792cb97",
+    "deviceName": "Gree AC",
+    "modelId": "10001",
+    "lastConnected": "2026-09-26T16:45:39.521Z",
+    "password": "Rejuanh@0728",
+    "host": "ingrih.gree.com",
+    "uid": 5142711,
+    "userId": "5142711",
+    "deviceKey": "WcTaU6oU2108iZBk",
+    "online": true
+  },
+  "schedules": [
+    {
+      "id": "sched-1791403290640",
+      "name": "Auto OFF at সকাল 4:00",
+      "nameBn": "সকাল 4:00 এসি বন্ধ",
+      "time": "04:00",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "power": false,
+      "temperature": 25,
+      "mode": "cool",
+      "fanSpeed": "auto",
+      "turbo": false,
+      "eco": false,
+      "health": false,
+      "displayLight": true,
+      "enabled": true
+    }
+  ],
+  "sleepCurves": [
+    {
+      "id": "curve-fast-cool",
+      "name": "Fast Cool Eco-Sleep",
+      "createdAt": "2026-09-26T17:44:07.717Z",
+      "stages": [
+        {
+          "id": "stg-1",
+          "label": "Fast Cool",
+          "temperature": 22,
+          "fanSpeed": "high",
+          "minutes": 30
+        },
+        {
+          "id": "stg-2",
+          "label": "Eco Sleep",
+          "temperature": 24,
+          "fanSpeed": "auto",
+          "minutes": 60
+        },
+        {
+          "id": "stg-3",
+          "label": "Comfort Maintain",
+          "temperature": 26,
+          "fanSpeed": "low",
+          "minutes": null
+        }
+      ]
+    },
+    {
+      "id": "curve-sleep-default",
+      "name": "Sleep curve",
+      "createdAt": "2026-09-26T17:44:07.717Z",
+      "stages": [
+        {
+          "id": "stg-a",
+          "label": "Initial Chill",
+          "temperature": 20,
+          "fanSpeed": "high",
+          "minutes": 30
+        },
+        {
+          "id": "stg-b",
+          "label": "Deep Sleep",
+          "temperature": 26,
+          "fanSpeed": "auto",
+          "minutes": 150
+        },
+        {
+          "id": "stg-c",
+          "label": "Morning Comfort",
+          "temperature": 27,
+          "fanSpeed": "low",
+          "minutes": null
+        }
+      ]
+    },
+    {
+      "id": "curve-baby-care",
+      "name": "Baby & Health Comfort",
+      "createdAt": "2026-09-26T17:44:07.717Z",
+      "stages": [
+        {
+          "id": "stg-x",
+          "label": "Gentle Cool",
+          "temperature": 24,
+          "fanSpeed": "auto",
+          "minutes": 60
+        },
+        {
+          "id": "stg-y",
+          "label": "Warm Sleep",
+          "temperature": 26,
+          "fanSpeed": "quiet",
+          "minutes": 240
+        },
+        {
+          "id": "stg-z",
+          "label": "Morning Breeze",
+          "temperature": 27,
+          "fanSpeed": "low",
+          "minutes": null
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "preset-turbo-chill",
+      "name": "Instant Fast Chill",
+      "nameBn": "দ্রুত ঠান্ডা / টার্বো চিল",
+      "temp": 18,
+      "mode": "cool",
+      "fanSpeed": "turbo",
+      "turbo": true,
+      "eco": false,
+      "icon": "Zap",
+      "accent": "#06B6D4"
+    },
+    {
+      "id": "preset-sleep-comfort",
+      "name": "Comfort Sleep (25°C)",
+      "nameBn": "আরামদায়ক ঘুম (২৫°C)",
+      "temp": 25,
+      "mode": "cool",
+      "fanSpeed": "quiet",
+      "turbo": false,
+      "eco": true,
+      "icon": "Moon",
+      "accent": "#8B5CF6"
+    },
+    {
+      "id": "preset-eco-save",
+      "name": "Energy Saver (26°C)",
+      "nameBn": "বিদ্যুৎ সাশ্রয়ী মোড (২৬°C)",
+      "temp": 26,
+      "mode": "eco",
+      "fanSpeed": "auto",
+      "turbo": false,
+      "eco": true,
+      "icon": "Leaf",
+      "accent": "#10B981"
+    },
+    {
+      "id": "preset-monsoon-dry",
+      "name": "Monsoon Dehumidifier",
+      "nameBn": "বর্ষার ভ্যাপসা দূরীকরণ",
+      "temp": 24,
+      "mode": "dry",
+      "fanSpeed": "low",
+      "turbo": false,
+      "eco": false,
+      "icon": "Droplets",
+      "accent": "#3B82F6"
+    },
+    {
+      "id": "preset-night-breeze",
+      "name": "Gentle Fan Breeze",
+      "nameBn": "হালকা বাতাস মোড",
+      "temp": 27,
+      "mode": "fan",
+      "fanSpeed": "med",
+      "turbo": false,
+      "eco": false,
+      "icon": "Wind",
+      "accent": "#F59E0B"
+    }
+  ],
+  "lastActiveACSettings": {
+    "temperature": 25,
+    "mode": "cool",
+    "fanSpeed": "low",
+    "quiet": false,
+    "turbo": false,
+    "eco": false,
+    "displayLight": true,
+    "ionFilter": true,
+    "health": true,
+    "swingV": "middle",
+    "swingH": "right",
+    "sleep": false
+  },
+  "irLogs": [
+    {
+      "id": "clean-start-1791478136893",
+      "timestamp": "2026-10-08T16:48:56.893Z",
+      "command": "15-MIN DEEP SELF-CLEAN INITIATED (Display shows: CL)",
+      "commandBn": "১৫ মিনিটের গভীর সেলফ ক্লিন মোড শুরু হয়েছে (এসি ডিসপ্লেতে \"CL\" দেখাচ্ছে)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010119CE",
+      "protocol": "Gree_SELF_CLEAN",
+      "source": "Web_UI"
+    },
+    {
+      "id": "stage-1-1791477211539",
+      "timestamp": "2026-10-08T16:33:31.539Z",
+      "command": "STAGE 1/2 ACTIVE: Temp=25°C, Fan=low, Light=ON (timer_start)",
+      "commandBn": "টাইমার শুরু: স্টেজ 1 চালু হয়েছে ➔ তাপমাত্রা 25°C, ফ্যান: স্লো (Low), লাইট: অন (60 মিনিট চলবে)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010119CE",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791477049838",
+      "timestamp": "2026-10-08T16:30:49.838Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 25°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 25°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791477049229",
+      "timestamp": "2026-10-08T16:30:49.229Z",
+      "command": "ON · 25°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (25°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010119CE",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791477044632",
+      "timestamp": "2026-10-08T16:30:44.632Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 26°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 26°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791477044129",
+      "timestamp": "2026-10-08T16:30:44.129Z",
+      "command": "ON · 26°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (26°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011AD5",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791477041563",
+      "timestamp": "2026-10-08T16:30:41.563Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 27°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 27°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791477040836",
+      "timestamp": "2026-10-08T16:30:40.836Z",
+      "command": "ON · 27°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (27°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304318468",
+      "timestamp": "2026-10-06T16:31:58.468Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304317792",
+      "timestamp": "2026-10-06T16:31:57.792Z",
+      "command": "ON · 24°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010118C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304310423",
+      "timestamp": "2026-10-06T16:31:50.423Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304309903",
+      "timestamp": "2026-10-06T16:31:49.903Z",
+      "command": "ON · 24°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010318C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304245878",
+      "timestamp": "2026-10-06T16:30:45.878Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304245234",
+      "timestamp": "2026-10-06T16:30:45.234Z",
+      "command": "ON · 24°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010118C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304240073",
+      "timestamp": "2026-10-06T16:30:40.073Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304239544",
+      "timestamp": "2026-10-06T16:30:39.544Z",
+      "command": "ON · 24°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010318C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304229387",
+      "timestamp": "2026-10-06T16:30:29.387Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304228730",
+      "timestamp": "2026-10-06T16:30:28.730Z",
+      "command": "ON · 24°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010318C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304206543",
+      "timestamp": "2026-10-06T16:30:06.543Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304205952",
+      "timestamp": "2026-10-06T16:30:05.952Z",
+      "command": "ON · 24°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010318C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304192556",
+      "timestamp": "2026-10-06T16:29:52.556Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 24°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 24°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304191982",
+      "timestamp": "2026-10-06T16:29:51.982Z",
+      "command": "ON · 24°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (24°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010318C7",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791304176689",
+      "timestamp": "2026-10-06T16:29:36.689Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 27°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 27°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791304176160",
+      "timestamp": "2026-10-06T16:29:36.160Z",
+      "command": "ON · 27°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (27°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101031BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791223811107",
+      "timestamp": "2026-10-05T18:10:11.107Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 27°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 27°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791223810488",
+      "timestamp": "2026-10-05T18:10:10.488Z",
+      "command": "ON · 27°C · COOL · FAN: QUIET · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (27°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101031BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791223480535",
+      "timestamp": "2026-10-05T18:04:40.535Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791223448893",
+      "timestamp": "2026-10-05T18:04:08.893Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 27°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 27°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791223448336",
+      "timestamp": "2026-10-05T18:04:08.336Z",
+      "command": "ON · 27°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (27°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791223392619",
+      "timestamp": "2026-10-05T18:03:12.619Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "stage-2-1791222643887",
+      "timestamp": "2026-10-05T17:50:43.887Z",
+      "command": "STAGE 2/2 ACTIVE: Temp=27°C, Fan=low, Light=OFF (jump_stage)",
+      "commandBn": "সরাসরি স্টেজ জাম্প: স্টেজ 2 চালু হয়েছে ➔ তাপমাত্রা 27°C, ফ্যান: স্লো (Low), লাইট: অফ (150 মিনিট চলবে)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "stage-1-1791222639949",
+      "timestamp": "2026-10-05T17:50:39.949Z",
+      "command": "STAGE 1/2 ACTIVE: Temp=25°C, Fan=med, Light=ON (jump_stage)",
+      "commandBn": "সরাসরি স্টেজ জাম্প: স্টেজ 1 চালু হয়েছে ➔ তাপমাত্রা 25°C, ফ্যান: মিডিয়াম (Med), লাইট: অন (90 মিনিট চলবে)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010219CE",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791222166651",
+      "timestamp": "2026-10-05T17:42:46.651Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791222159566",
+      "timestamp": "2026-10-05T17:42:39.566Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791222145533",
+      "timestamp": "2026-10-05T17:42:25.533Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791222061565",
+      "timestamp": "2026-10-05T17:41:01.565Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791222005668",
+      "timestamp": "2026-10-05T17:40:05.668Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221977709",
+      "timestamp": "2026-10-05T17:39:37.709Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 27°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 27°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "stage-2-1791221922079",
+      "timestamp": "2026-10-05T17:38:42.079Z",
+      "command": "STAGE 2/2 ACTIVE: Temp=27°C, Fan=low, Light=OFF (jump_stage)",
+      "commandBn": "সরাসরি স্টেজ জাম্প: স্টেজ 2 চালু হয়েছে ➔ তাপমাত্রা 27°C, ফ্যান: স্লো (Low), লাইট: অফ (120 মিনিট চলবে)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "stage-1-1791221907552",
+      "timestamp": "2026-10-05T17:38:27.552Z",
+      "command": "STAGE 1/2 ACTIVE: Temp=25°C, Fan=med, Light=ON (timer_start)",
+      "commandBn": "টাইমার শুরু: স্টেজ 1 চালু হয়েছে ➔ তাপমাত্রা 25°C, ফ্যান: মিডিয়াম (Med), লাইট: অন (60 মিনিট চলবে)",
+      "brand": "Gree",
+      "hexCode": "0xGR01010219CE",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221763588",
+      "timestamp": "2026-10-05T17:36:03.588Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 24°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 24°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ext-temp-1791221699906",
+      "timestamp": "2026-10-05T17:34:59.906Z",
+      "command": "REMOTE_TEMP_CHANGE: Temperature set to 24°C via physical remote",
+      "commandBn": "রিমোট কন্ট্রোলের মাধ্যমে তাপমাত্রা 24°C এ পরিবর্তিত হয়েছে",
+      "brand": "Gree",
+      "hexCode": "EXT_REMOTE_TEMP",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221679512",
+      "timestamp": "2026-10-05T17:34:39.512Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 28°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 28°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221665842",
+      "timestamp": "2026-10-05T17:34:25.842Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 28°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 28°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221623700",
+      "timestamp": "2026-10-05T17:33:43.700Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 28°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 28°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791221618138",
+      "timestamp": "2026-10-05T17:33:38.138Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 28°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 28°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791221617399",
+      "timestamp": "2026-10-05T17:33:37.399Z",
+      "command": "ON · 28°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (28°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011CE3",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "gree-mqtt-ack-1791221616715",
+      "timestamp": "2026-10-05T17:33:36.715Z",
+      "command": "MQTT_ACKNOWLEDGED: Gree AC [c0393792cb97] accepted command (Power: ON, 27°C, COOL)",
+      "commandBn": "গ্রী এসি কনফার্ম করেছে: কমান্ড সফলভাবে কার্যকর হয়েছে (অন, 27°C, COOL)",
+      "brand": "Gree",
+      "hexCode": "ACK_R_200",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "ir-1791221615979",
+      "timestamp": "2026-10-05T17:33:35.979Z",
+      "command": "ON · 27°C · COOL · FAN: LOW · GREE",
+      "commandBn": "গ্রী ক্লাউড কমান্ড: চালু (27°C)",
+      "brand": "Gree",
+      "hexCode": "0xGR0101011BDC",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    },
+    {
+      "id": "sync-1791221595559",
+      "timestamp": "2026-10-05T17:33:15.559Z",
+      "command": "GREE CLOUD SYNC: AC Live Status (ON, 26°C) verified via MQTT broker",
+      "commandBn": "গ্রী ক্লাউড সিঙ্ক: এসির লাইভ স্ট্যাটাস (অন, 26°C) যাচাই করা হয়েছে।",
+      "brand": "Gree",
+      "hexCode": "CLOUD_SYNC_OK",
+      "protocol": "GREE_EWPE_CLOUD",
+      "source": "Direct_WiFi_AC"
+    }
+  ],
+  "powerTelemetry": {
+    "watts": 1022,
+    "voltage": 228.4,
+    "current": 4.47,
+    "tonnage": 1.5,
+    "inverterLoadPercent": 66,
+    "unitRateBdt": 7,
+    "currency": "BDT",
+    "todayKwh": 0.504,
+    "monthlyKwh": 6.612075555555352,
+    "costBdt": 3.53,
+    "monthlyCostBdt": 46.99548888888322,
+    "currentSessionStartTime": "2026-10-08T16:30:40.835Z",
+    "currentSessionDurationMinutes": 18,
+    "currentSessionKwh": 0.3708177777777778,
+    "currentSessionCostBdt": 2.595724444444453,
+    "todayRuntimeMinutes": 198,
+    "turnOnCountToday": 2,
+    "recentSessions": [
+      {
+        "id": "sess-1791476855770",
+        "startTime": "2026-10-07T18:00:00.000Z",
+        "endTime": "2026-10-08T16:27:35.769Z",
+        "durationMinutes": 1348,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 28,
+        "avgWatts": 6,
+        "kwhUsed": 0.133,
+        "costBdt": 0.93
+      },
+      {
+        "id": "sess-1791304057786",
+        "startTime": "2026-10-05T18:00:00.000Z",
+        "endTime": "2026-10-06T16:27:37.786Z",
+        "durationMinutes": 1348,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 27,
+        "avgWatts": 8,
+        "kwhUsed": 0.177,
+        "costBdt": 1.24
+      },
+      {
+        "id": "sess-1791216508692",
+        "startTime": "2026-10-04T18:00:00.000Z",
+        "endTime": "2026-10-05T16:08:28.691Z",
+        "durationMinutes": 1328,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 27,
+        "avgWatts": 600,
+        "kwhUsed": 0.002,
+        "costBdt": 0.01
+      },
+      {
+        "id": "sess-1791132319905",
+        "startTime": "2026-10-04T16:45:19.107Z",
+        "endTime": "2026-10-04T16:45:19.904Z",
+        "durationMinutes": 1,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 24,
+        "avgWatts": 95,
+        "kwhUsed": 0.002,
+        "costBdt": 0.01
+      },
+      {
+        "id": "sess-1791132316981",
+        "startTime": "2026-10-03T19:27:40.951Z",
+        "endTime": "2026-10-04T16:45:16.981Z",
+        "durationMinutes": 1278,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 28,
+        "avgWatts": 52,
+        "kwhUsed": 1.098,
+        "costBdt": 7.68
+      },
+      {
+        "id": "sess-1791055324294",
+        "startTime": "2026-10-03T18:00:00.000Z",
+        "endTime": "2026-10-03T19:22:04.294Z",
+        "durationMinutes": 82,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 27,
+        "avgWatts": 2,
+        "kwhUsed": 0.002,
+        "costBdt": 0.02
+      },
+      {
+        "id": "sess-1790545915018",
+        "startTime": "2026-09-27T21:44:00.216Z",
+        "endTime": "2026-09-27T21:51:55.018Z",
+        "durationMinutes": 8,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 28,
+        "avgWatts": 1157,
+        "kwhUsed": 0.154,
+        "costBdt": 1.31
+      },
+      {
+        "id": "sess-1790545359497",
+        "startTime": "2026-09-26T17:32:56.179Z",
+        "endTime": "2026-09-27T00:32:39.497Z",
+        "durationMinutes": 420,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 24,
+        "avgWatts": 600,
+        "kwhUsed": 0.216,
+        "costBdt": 1.84
+      },
+      {
+        "id": "sess-1790443972052",
+        "startTime": "2026-09-26T17:32:44.300Z",
+        "endTime": "2026-09-26T17:32:52.052Z",
+        "durationMinutes": 1,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 28,
+        "avgWatts": 119,
+        "kwhUsed": 0.002,
+        "costBdt": 0.02
+      },
+      {
+        "id": "sess-1790443963838",
+        "startTime": "2026-09-26T17:26:21.038Z",
+        "endTime": "2026-09-26T17:32:43.838Z",
+        "durationMinutes": 6,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 28,
+        "avgWatts": 941,
+        "kwhUsed": 0.094,
+        "costBdt": 0.8
+      },
+      {
+        "id": "sess-1790443575579",
+        "startTime": "2026-09-26T17:26:00.559Z",
+        "endTime": "2026-09-26T17:26:15.579Z",
+        "durationMinutes": 1,
+        "isRunning": false,
+        "mode": "cool",
+        "targetTemp": 24,
+        "avgWatts": 440,
+        "kwhUsed": 0.007,
+        "costBdt": 0.06
+      }
+    ],
+    "dailyHistory": [
+      {
+        "date": "2026-10-08",
+        "dayName": "আজ (Today)",
+        "totalRuntimeMinutes": 198,
+        "turnOnCount": 2,
+        "totalKwh": 0.504,
+        "totalCostBdt": 3.53,
+        "sessions": [
+          {
+            "id": "sess-1791476855770",
+            "startTime": "2026-10-07T18:00:00.000Z",
+            "endTime": "2026-10-08T16:27:35.769Z",
+            "durationMinutes": 180,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 28,
+            "avgWatts": 6,
+            "kwhUsed": 0.133,
+            "costBdt": 0.93
+          }
+        ]
+      },
+      {
+        "date": "2026-10-06",
+        "dayName": "06 অক্টোবর",
+        "totalRuntimeMinutes": 1440,
+        "turnOnCount": 2,
+        "totalKwh": 0.451,
+        "totalCostBdt": 3.16,
+        "sessions": [
+          {
+            "id": "sess-1791304057786",
+            "startTime": "2026-10-05T18:00:00.000Z",
+            "endTime": "2026-10-06T16:27:37.786Z",
+            "durationMinutes": 180,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 27,
+            "avgWatts": 8,
+            "kwhUsed": 0.177,
+            "costBdt": 1.24
+          }
+        ]
+      },
+      {
+        "date": "2026-10-05",
+        "dayName": "05 অক্টোবর",
+        "totalRuntimeMinutes": 398,
+        "turnOnCount": 2,
+        "totalKwh": 1.536,
+        "totalCostBdt": 10.75,
+        "sessions": [
+          {
+            "id": "sess-1791216508692",
+            "startTime": "2026-10-04T18:00:00.000Z",
+            "endTime": "2026-10-05T16:08:28.691Z",
+            "durationMinutes": 180,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 27,
+            "avgWatts": 600,
+            "kwhUsed": 0.002,
+            "costBdt": 0.01
+          }
+        ]
+      },
+      {
+        "date": "2026-10-04",
+        "dayName": "04 অক্টোবর",
+        "totalRuntimeMinutes": 1440,
+        "turnOnCount": 3,
+        "totalKwh": 1.673,
+        "totalCostBdt": 11.71,
+        "sessions": [
+          {
+            "id": "sess-1791132319905",
+            "startTime": "2026-10-04T16:45:19.107Z",
+            "endTime": "2026-10-04T16:45:19.904Z",
+            "durationMinutes": 1,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 24,
+            "avgWatts": 95,
+            "kwhUsed": 0.002,
+            "costBdt": 0.01
+          },
+          {
+            "id": "sess-1791132316981",
+            "startTime": "2026-10-03T19:27:40.951Z",
+            "endTime": "2026-10-03T21:01:40.951Z",
+            "durationMinutes": 94,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 28,
+            "avgWatts": 701,
+            "kwhUsed": 1.098,
+            "costBdt": 7.68
+          },
+          {
+            "id": "sess-1791055324294",
+            "startTime": "2026-10-03T18:00:00.000Z",
+            "endTime": "2026-10-03T19:22:04.294Z",
+            "durationMinutes": 82,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 27,
+            "avgWatts": 2,
+            "kwhUsed": 0.002,
+            "costBdt": 0.02
+          }
+        ]
+      },
+      {
+        "date": "2026-10-03",
+        "dayName": "03 অক্টোবর",
+        "totalRuntimeMinutes": 120,
+        "turnOnCount": 1,
+        "totalKwh": 1.15,
+        "totalCostBdt": 8.05,
+        "sessions": []
+      },
+      {
+        "date": "2026-10-02",
+        "dayName": "02 অক্টোবর",
+        "totalRuntimeMinutes": 85,
+        "turnOnCount": 1,
+        "totalKwh": 0.992,
+        "totalCostBdt": 8.43,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-28",
+        "dayName": "28 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 180,
+        "turnOnCount": 2,
+        "totalKwh": 2.06,
+        "totalCostBdt": 14.42,
+        "sessions": [
+          {
+            "id": "sess-20260928-2",
+            "startTime": "2026-09-28T08:00:00.000Z",
+            "endTime": "2026-09-28T10:00:00.000Z",
+            "durationMinutes": 120,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 24,
+            "avgWatts": 720,
+            "kwhUsed": 1.44,
+            "costBdt": 10.08
+          },
+          {
+            "id": "sess-20260928-1",
+            "startTime": "2026-09-28T02:30:00.000Z",
+            "endTime": "2026-09-28T03:30:00.000Z",
+            "durationMinutes": 60,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 26,
+            "avgWatts": 620,
+            "kwhUsed": 0.62,
+            "costBdt": 4.34
+          }
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "dayName": "27 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 420,
+        "turnOnCount": 2,
+        "totalKwh": 4.41,
+        "totalCostBdt": 30.87,
+        "sessions": [
+          {
+            "id": "sess-20260927-2",
+            "startTime": "2026-09-27T14:00:00.000Z",
+            "endTime": "2026-09-27T17:30:00.000Z",
+            "durationMinutes": 210,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 25,
+            "avgWatts": 580,
+            "kwhUsed": 2.03,
+            "costBdt": 14.21
+          },
+          {
+            "id": "sess-20260927-1",
+            "startTime": "2026-09-27T07:00:00.000Z",
+            "endTime": "2026-09-27T10:30:00.000Z",
+            "durationMinutes": 210,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 24,
+            "avgWatts": 680,
+            "kwhUsed": 2.38,
+            "costBdt": 16.66
+          }
+        ]
+      },
+      {
+        "date": "2026-09-26",
+        "dayName": "26 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 310,
+        "turnOnCount": 3,
+        "totalKwh": 3.47,
+        "totalCostBdt": 24.29,
+        "sessions": [
+          {
+            "id": "sess-20260926-3",
+            "startTime": "2026-09-26T15:00:00.000Z",
+            "endTime": "2026-09-26T16:40:00.000Z",
+            "durationMinutes": 100,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 25,
+            "avgWatts": 640,
+            "kwhUsed": 1.07,
+            "costBdt": 7.49
+          },
+          {
+            "id": "sess-20260926-2",
+            "startTime": "2026-09-26T09:00:00.000Z",
+            "endTime": "2026-09-26T11:00:00.000Z",
+            "durationMinutes": 120,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 24,
+            "avgWatts": 750,
+            "kwhUsed": 1.5,
+            "costBdt": 10.5
+          },
+          {
+            "id": "sess-20260926-1",
+            "startTime": "2026-09-26T04:00:00.000Z",
+            "endTime": "2026-09-26T05:30:00.000Z",
+            "durationMinutes": 90,
+            "isRunning": false,
+            "mode": "cool",
+            "targetTemp": 26,
+            "avgWatts": 600,
+            "kwhUsed": 0.9,
+            "costBdt": 6.3
+          }
+        ]
+      },
+      {
+        "date": "2026-09-25",
+        "dayName": "25 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 410,
+        "turnOnCount": 3,
+        "totalKwh": 2.85,
+        "totalCostBdt": 24.23,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-24",
+        "dayName": "24 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 360,
+        "turnOnCount": 2,
+        "totalKwh": 2.4,
+        "totalCostBdt": 20.4,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-23",
+        "dayName": "23 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 450,
+        "turnOnCount": 3,
+        "totalKwh": 3.12,
+        "totalCostBdt": 26.52,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-22",
+        "dayName": "22 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 290,
+        "turnOnCount": 2,
+        "totalKwh": 1.95,
+        "totalCostBdt": 16.58,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-21",
+        "dayName": "21 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 420,
+        "turnOnCount": 3,
+        "totalKwh": 2.9,
+        "totalCostBdt": 24.65,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-20",
+        "dayName": "20 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 390,
+        "turnOnCount": 2,
+        "totalKwh": 2.65,
+        "totalCostBdt": 22.53,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-19",
+        "dayName": "19 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 480,
+        "turnOnCount": 3,
+        "totalKwh": 3.3,
+        "totalCostBdt": 28.05,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-18",
+        "dayName": "18 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 350,
+        "turnOnCount": 2,
+        "totalKwh": 2.35,
+        "totalCostBdt": 19.98,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-17",
+        "dayName": "17 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 430,
+        "turnOnCount": 3,
+        "totalKwh": 2.98,
+        "totalCostBdt": 25.33,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-16",
+        "dayName": "16 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 300,
+        "turnOnCount": 2,
+        "totalKwh": 2.05,
+        "totalCostBdt": 17.43,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-15",
+        "dayName": "15 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 460,
+        "turnOnCount": 3,
+        "totalKwh": 3.18,
+        "totalCostBdt": 27.03,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-14",
+        "dayName": "14 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 370,
+        "turnOnCount": 2,
+        "totalKwh": 2.5,
+        "totalCostBdt": 21.25,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-13",
+        "dayName": "13 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 400,
+        "turnOnCount": 3,
+        "totalKwh": 2.75,
+        "totalCostBdt": 23.38,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-12",
+        "dayName": "12 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 510,
+        "turnOnCount": 3,
+        "totalKwh": 3.52,
+        "totalCostBdt": 29.92,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-11",
+        "dayName": "11 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 330,
+        "turnOnCount": 2,
+        "totalKwh": 2.22,
+        "totalCostBdt": 18.87,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-10",
+        "dayName": "10 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 440,
+        "turnOnCount": 3,
+        "totalKwh": 3.05,
+        "totalCostBdt": 25.93,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-09",
+        "dayName": "09 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 280,
+        "turnOnCount": 2,
+        "totalKwh": 1.88,
+        "totalCostBdt": 15.98,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-08",
+        "dayName": "08 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 420,
+        "turnOnCount": 3,
+        "totalKwh": 2.88,
+        "totalCostBdt": 24.48,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-07",
+        "dayName": "07 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 390,
+        "turnOnCount": 2,
+        "totalKwh": 2.68,
+        "totalCostBdt": 22.78,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-06",
+        "dayName": "06 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 470,
+        "turnOnCount": 3,
+        "totalKwh": 3.25,
+        "totalCostBdt": 27.63,
+        "sessions": []
+      },
+      {
+        "date": "2026-09-05",
+        "dayName": "05 সেপ্টেম্বর",
+        "totalRuntimeMinutes": 340,
+        "turnOnCount": 2,
+        "totalKwh": 2.3,
+        "totalCostBdt": 19.55,
+        "sessions": []
+      }
+    ],
+    "lastCheckedDate": "2026-10-08"
+  }
+}
