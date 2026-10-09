@@ -146,30 +146,32 @@ const persistSchedulesLocally = (list: ACSchedule[], isUserAction: boolean = tru
 };
 
 const DEFAULT_AC_STATE: SmartACState = {
-  id: '',
-  isPaired: false,
-  deviceName: '',
-  deviceModel: '',
-  location: '',
-  isOnline: false,
-  power: false,
-  temperature: 24,
+  id: 'ac_gree_c0393792cb97',
+  isPaired: true,
+  deviceName: 'Gree AC',
+  deviceModel: 'Gree Inverter 1.5T',
+  location: 'Master Bedroom',
+  isOnline: true,
+  power: true,
+  temperature: 25,
   mode: 'cool',
-  fanSpeed: 'auto',
-  swingV: 'auto',
-  swingH: 'auto',
+  fanSpeed: 'low',
+  swingV: 'middle',
+  swingH: 'right',
   turbo: false,
   eco: false,
   sleep: false,
   displayLight: true,
-  ionFilter: false,
+  ionFilter: true,
+  autoClean: false,
+  filterCleanHours: 0,
   quiet: false,
   locked: false,
   brand: 'Gree',
   timerOffMinutes: 0,
   timerOnMinutes: 0,
-  lastIrCommand: '',
-  lastIrHex: '0x000000',
+  lastIrCommand: 'Gree AC Connected',
+  lastIrHex: '0xGR01010119CE',
   lastUpdated: new Date().toISOString(),
 };
 
@@ -335,28 +337,44 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (snap.exists()) {
             const data = snap.data();
             const savedState: Partial<SmartACState> = {
+              isPaired: data.isPaired !== undefined ? Boolean(data.isPaired) : true,
+              deviceName: data.deviceName || 'Gree AC',
+              deviceModel: data.deviceModel || 'Gree Inverter 1.5T',
+              location: data.location || 'Master Bedroom',
+              brand: data.brand || 'Gree',
+              isOnline: data.isOnline !== undefined ? Boolean(data.isOnline) : true,
               power: Boolean(data.power),
               temperature: Number(data.temperature),
-              mode: data.mode,
-              fanSpeed: data.fanSpeed,
+              mode: data.mode || 'cool',
+              fanSpeed: data.fanSpeed || 'low',
               turbo: Boolean(data.turbo),
               eco: Boolean(data.eco),
               sleep: Boolean(data.sleep),
               displayLight: Boolean(data.displayLight),
               ionFilter: Boolean(data.ionFilter),
               quiet: Boolean(data.quiet),
-              swingV: data.swingV,
-              swingH: data.swingH,
-              brand: data.brand || 'Gree',
-              deviceName: data.deviceName || 'Gree AC',
+              swingV: data.swingV || 'middle',
+              swingH: data.swingH || 'right',
             };
-            setAc((prev) => ({ ...prev, ...savedState }));
+            setAc((prev) => {
+              const updated = { ...prev, ...savedState, isPaired: true };
+              try {
+                localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(updated));
+              } catch {}
+              return updated;
+            });
             setDbLastSynced(new Date().toLocaleTimeString());
           } else {
             // First time this Google account signs in: save current AC state as initial settings
             const docRef = doc(db, 'users', currentUser.uid, 'settings', 'acState');
             const initialPayload = {
               userId: currentUser.uid,
+              isPaired: ac.isPaired !== undefined ? ac.isPaired : true,
+              deviceName: ac.deviceName || 'Gree AC',
+              deviceModel: ac.deviceModel || 'Gree Inverter 1.5T',
+              location: ac.location || 'Master Bedroom',
+              brand: ac.brand || 'Gree',
+              isOnline: true,
               power: ac.power,
               temperature: ac.temperature,
               mode: ac.mode,
@@ -369,8 +387,6 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
               quiet: ac.quiet,
               swingV: ac.swingV,
               swingH: ac.swingH,
-              brand: ac.brand || 'Gree',
-              deviceName: ac.deviceName || 'Gree AC',
               updatedAt: new Date().toISOString(),
             };
             setDoc(docRef, initialPayload, { merge: true })
@@ -404,14 +420,14 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchData = useCallback(async () => {
     try {
       const [stateRes, presetsRes, schedRes, logsRes, dirRes] = await Promise.all([
-        fetch('/api/ac/state'),
-        fetch('/api/ac/presets'),
-        fetch('/api/ac/schedules'),
-        fetch('/api/ac/logs'),
-        fetch('/api/ac/direct-config'),
+        fetch('/api/ac/state').catch(() => null),
+        fetch('/api/ac/presets').catch(() => null),
+        fetch('/api/ac/schedules').catch(() => null),
+        fetch('/api/ac/logs').catch(() => null),
+        fetch('/api/ac/direct-config').catch(() => null),
       ]);
 
-      if (stateRes.ok) {
+      if (stateRes && stateRes.ok) {
         const d = await stateRes.json();
         if (d.success) {
           // Check if local storage has a paired device that needs syncing to server
@@ -452,12 +468,28 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
             } catch {}
           }
         }
+      } else {
+        // Fallback for Vercel/Static hosting where backend is not running
+        const localSaved = localStorage.getItem(STORAGE_KEY_AC);
+        if (localSaved) {
+          try {
+            const parsed = JSON.parse(localSaved);
+            if (parsed && typeof parsed === 'object') {
+              setAc((prev) => ({ ...prev, ...parsed, isPaired: parsed.isPaired !== undefined ? parsed.isPaired : true }));
+            }
+          } catch {}
+        } else {
+          setAc(DEFAULT_AC_STATE);
+          try {
+            localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(DEFAULT_AC_STATE));
+          } catch {}
+        }
       }
-      if (presetsRes.ok) {
+      if (presetsRes && presetsRes.ok) {
         const p = await presetsRes.json();
         if (p.success) setPresets(p.presets);
       }
-      if (schedRes.ok) {
+      if (schedRes && schedRes.ok) {
         const s = await schedRes.json();
         if (s.success && Array.isArray(s.schedules)) {
           const userHasModified = localStorage.getItem(STORAGE_KEY_SCHEDULES_MODIFIED) === 'true';
@@ -485,11 +517,11 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }
         }
       }
-      if (logsRes.ok) {
+      if (logsRes && logsRes.ok) {
         const l = await logsRes.json();
         if (l.success) setLogs(l.logs);
       }
-      if (dirRes.ok) {
+      if (dirRes && dirRes.ok) {
         const dc = await dirRes.json();
         if (dc.success) setDirectConfig(dc.directConfig);
       }
@@ -1526,6 +1558,25 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (error: any) {
       console.error('Google Sign In Error:', error);
       sound.playClick(false);
+      if (error?.code === 'auth/unauthorized-domain') {
+        alert(
+          language === 'bn'
+            ? 'Firebase-এ এই ডোমেইনটি অনুমোদিত নয়। অনুগ্রহ করে Firebase Console -> Authentication -> Settings -> Authorized Domains-এ "ac-controler1.vercel.app" যোগ করুন।'
+            : 'Unauthorized domain. Please add "ac-controler1.vercel.app" to Firebase Console -> Authentication -> Settings -> Authorized Domains.'
+        );
+      } else if (error?.code === 'auth/popup-blocked') {
+        alert(
+          language === 'bn'
+            ? 'ব্রাউজারে পপআপ ব্লক করা আছে। অনুগ্রহ করে পপআপ এলাউ (Allow) করুন।'
+            : 'Popup blocked by browser. Please allow popups to sign in.'
+        );
+      } else if (error?.code !== 'auth/popup-closed-by-user') {
+        alert(
+          language === 'bn'
+            ? `সাইন-ইন ত্রুটি: ${error?.message || 'অজানা সমস্যা'}`
+            : `Sign in error: ${error?.message || 'Unknown error'}`
+        );
+      }
     }
   };
 
@@ -1547,6 +1598,12 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const docRef = doc(db, 'users', auth.currentUser.uid, 'settings', 'acState');
       const payload = {
         userId: auth.currentUser.uid,
+        isPaired: ac.isPaired,
+        deviceName: ac.deviceName || 'Gree AC',
+        deviceModel: ac.deviceModel || 'Gree Inverter 1.5T',
+        location: ac.location || 'Master Bedroom',
+        brand: ac.brand || 'Gree',
+        isOnline: ac.isOnline !== undefined ? ac.isOnline : true,
         power: ac.power,
         temperature: ac.temperature,
         mode: ac.mode,
@@ -1559,8 +1616,6 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         quiet: ac.quiet,
         swingV: ac.swingV,
         swingH: ac.swingH,
-        brand: ac.brand || 'Gree',
-        deviceName: ac.deviceName || 'Gree AC',
         updatedAt: new Date().toISOString(),
       };
       await setDoc(docRef, payload, { merge: true });
@@ -1583,6 +1638,12 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (snap.exists()) {
         const data = snap.data();
         const loadedState: Partial<SmartACState> = {
+          isPaired: data.isPaired !== undefined ? Boolean(data.isPaired) : true,
+          deviceName: data.deviceName || 'Gree AC',
+          deviceModel: data.deviceModel || 'Gree Inverter 1.5T',
+          location: data.location || 'Master Bedroom',
+          brand: data.brand || 'Gree',
+          isOnline: data.isOnline !== undefined ? Boolean(data.isOnline) : true,
           power: Boolean(data.power),
           temperature: Number(data.temperature),
           mode: data.mode,
@@ -1595,10 +1656,14 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
           quiet: Boolean(data.quiet),
           swingV: data.swingV,
           swingH: data.swingH,
-          brand: data.brand || 'Gree',
-          deviceName: data.deviceName || 'Gree AC',
         };
-        setAc((prev) => ({ ...prev, ...loadedState }));
+        setAc((prev) => {
+          const merged = { ...prev, ...loadedState, isPaired: true };
+          try {
+            localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
         setDbLastSynced(new Date().toLocaleTimeString());
         await fetch('/api/ac/set', {
           method: 'POST',
