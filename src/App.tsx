@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 
 function ACAppContent() {
-  const { ac, togglePower, language, setLanguage, soundEnabled, setSoundEnabled } = useSmartAC();
+  const { ac, togglePower, language, setLanguage, soundEnabled, setSoundEnabled, directConfig, hardware } = useSmartAC();
   const [activeTab, setActiveTab] = useState<'home' | 'control' | 'curve' | 'power' | 'settings'>('control');
   const [viewMode, setViewMode] = useState<'overview' | 'inside'>('overview');
   const [showHardwareModal, setShowHardwareModal] = useState(false);
@@ -233,8 +233,8 @@ function ACAppContent() {
               </div>
             </div>
 
-            {/* Status Out-of-Sync Warning */}
-            {!showHardwareModal && (
+            {/* Status Out-of-Sync Warning (only shown if not connected to Gree Cloud and no hardware bridge) */}
+            {directConfig?.activeMethod !== 'gree_cloud' && !hardware?.connected && !showHardwareModal && (
               <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between gap-4 animate-slideDown">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
