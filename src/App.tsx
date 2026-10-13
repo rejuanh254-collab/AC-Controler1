@@ -36,7 +36,7 @@ import {
 
 function ACAppContent() {
   const { ac, togglePower, language, setLanguage, soundEnabled, setSoundEnabled } = useSmartAC();
-  const [activeTab, setActiveTab] = useState<'home' | 'control' | 'curve' | 'power' | 'settings'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'control' | 'curve' | 'power' | 'settings'>('control');
   const [viewMode, setViewMode] = useState<'overview' | 'inside'>('overview');
   const [showHardwareModal, setShowHardwareModal] = useState(false);
   const [showNoArduinoModal, setShowNoArduinoModal] = useState(false);
@@ -49,73 +49,15 @@ function ACAppContent() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-white pb-24">
-      {/* Sticky Top Header with Google Account & Cloud DB Sync */}
-      <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-2.5 transition-all">
+      {/* Top Header: Seamless matching Screenshot 1 on Control tab */}
+      <header className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-2.5 transition-all">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-md transition-all ${
-                ac.power
-                  ? 'bg-gradient-to-tr from-cyan-600 to-blue-500 text-white shadow-cyan-500/20'
-                  : 'bg-slate-900 border border-slate-800 text-slate-500'
-              }`}
-            >
-              <Snowflake className={`w-4 h-4 ${ac.power ? 'animate-spin-slow' : ''}`} />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-extrabold tracking-tight text-white font-sans">
-                  CoolHome <span className="text-cyan-400">AC</span>
-                </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                  {ac.brand || 'Gree'}
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-mono flex items-center gap-1.5">
-                <span className={`w-1.5 h-1.5 rounded-full ${ac.isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}></span>
-                <span>{ac.isOnline ? (language === 'bn' ? 'গ্রী ক্লাউড সক্রিয়' : 'Gree Cloud Online') : 'Offline'}</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <PWAInstallButton />
-            <button
-              onClick={() => setLanguage(language === 'bn' ? 'en' : 'bn')}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all"
-            >
-              {language === 'bn' ? 'EN' : 'বাংলা'}
-            </button>
-            <GoogleAuthButton />
-          </div>
-        </div>
-      </header>
-      {/* Main Container */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-5 sm:pt-7 pb-4">
-        {/* TAB 1: HOME (My Devices overview) */}
-        {activeTab === 'home' && (
-          <div className="space-y-6 animate-fadeIn">
-            {/* Clean Device List / Overview */}
-            <ACDeviceOverviewCard
-              onEnterDevice={() => setActiveTab('control')}
-              onOpenEditModal={() => setShowEditModal(true)}
-              onOpenNoArduino={() => setShowNoArduinoModal(true)}
-              onOpenAddWizard={() => setShowAddWizard(true)}
-              onOpenVoiceModal={() => setShowVoiceModal(true)}
-              onOpenCleanModal={() => setShowCleanModal(true)}
-            />
-          </div>
-        )}
-
-        {/* TAB 2: CONTROL (Dedicated AC Device Controller Page) */}
-        {activeTab === 'control' && (
-          <div className="space-y-6 animate-fadeIn">
-            {/* Control Page Top Navigation Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl">
+          {activeTab === 'control' ? (
+            <div className="w-full flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('home')}
-                  className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-slate-700"
+                  className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-slate-800 shadow-sm"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>{language === 'bn' ? 'হোমে ফিরুন' : 'Back to Home'}</span>
@@ -123,13 +65,13 @@ function ACAppContent() {
 
                 <div className="flex items-center gap-2">
                   <span className="text-xs sm:text-sm font-bold text-white font-mono">
-                    {ac.deviceName || 'Gree Inverter'}
+                    {ac.deviceName || 'Gree AC'}
                   </span>
                   <button
                     onClick={togglePower}
-                    className={`text-[10px] px-3 py-1 rounded-full font-bold transition-all active:scale-95 ${
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold transition-all active:scale-95 ${
                       ac.power
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30'
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30'
                         : 'bg-emerald-500 text-slate-950 border border-emerald-400 hover:bg-emerald-400'
                     }`}
                   >
@@ -150,7 +92,7 @@ function ACAppContent() {
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 shadow-sm active:scale-95 ${
                     ac.autoClean
                       ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-extrabold shadow-cyan-500/25'
-                      : 'bg-slate-800/90 hover:bg-slate-750 text-cyan-300 border-slate-700 hover:border-cyan-500/40'
+                      : 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border-slate-800 hover:border-cyan-500/40'
                   }`}
                   title={language === 'bn' ? 'সেলফ ক্লিন ও ফিল্টার কেয়ার' : 'Self Clean & Maintenance'}
                 >
@@ -165,46 +107,104 @@ function ACAppContent() {
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="hidden sm:inline">{language === 'bn' ? 'ক্লাউড সিঙ্ক কার্যকর' : 'Cloud Sync Active'}</span>
                 </div>
+
+                <div className="flex items-center gap-1.5 border-l border-slate-800 pl-2">
+                  <PWAInstallButton />
+                  <button
+                    onClick={() => setLanguage(language === 'bn' ? 'en' : 'bn')}
+                    className="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-[10px] font-bold text-slate-300 hover:text-white transition-all"
+                  >
+                    {language === 'bn' ? 'EN' : 'বাং'}
+                  </button>
+                  <GoogleAuthButton />
+                </div>
               </div>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-md transition-all ${
+                    ac.power
+                      ? 'bg-gradient-to-tr from-cyan-600 to-blue-500 text-white shadow-cyan-500/20'
+                      : 'bg-slate-900 border border-slate-800 text-slate-500'
+                  }`}
+                >
+                  <Snowflake className={`w-4 h-4 ${ac.power ? 'animate-spin-slow' : ''}`} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-extrabold tracking-tight text-white font-sans">
+                      CoolHome <span className="text-cyan-400">AC</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                      {ac.brand || 'Gree'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-mono flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${ac.isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}></span>
+                    <span>{ac.isOnline ? (language === 'bn' ? 'গ্রী ক্লাউড সক্রিয়' : 'Gree Cloud Online') : 'Offline'}</span>
+                  </p>
+                </div>
+              </div>
 
-            {/* Active Deep Clean or Auto-Clean Status Banner */}
-            {(ac.isCleaning || ac.autoClean) && (
+              <div className="flex items-center gap-2">
+                <PWAInstallButton />
+                <button
+                  onClick={() => setLanguage(language === 'bn' ? 'en' : 'bn')}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all"
+                >
+                  {language === 'bn' ? 'EN' : 'বাংলা'}
+                </button>
+                <GoogleAuthButton />
+              </div>
+            </>
+          )}
+        </div>
+      </header>
+      {/* Main Container */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-5 sm:pt-7 pb-4">
+        {/* TAB 1: HOME (My Devices overview) */}
+        {activeTab === 'home' && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Clean Device List / Overview */}
+            <ACDeviceOverviewCard
+              onEnterDevice={() => setActiveTab('control')}
+              onOpenEditModal={() => setShowEditModal(true)}
+              onOpenNoArduino={() => setShowNoArduinoModal(true)}
+              onOpenAddWizard={() => setShowAddWizard(true)}
+              onOpenVoiceModal={() => setShowVoiceModal(true)}
+              onOpenCleanModal={() => setShowCleanModal(true)}
+            />
+          </div>
+        )}
+
+        {/* TAB 2: CONTROL (Dedicated AC Device Controller Page - Screenshot 1) */}
+        {activeTab === 'control' && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Active Deep Clean Status Banner (only when cleaning cycle is actively running) */}
+            {ac.isCleaning && (
               <div
                 onClick={() => setShowCleanModal(true)}
-                className={`cursor-pointer w-full p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 shadow-lg ${
-                  ac.isCleaning
-                    ? 'bg-cyan-950/60 border-cyan-400 text-white shadow-cyan-500/20 animate-pulse'
-                    : 'bg-slate-900/90 border-cyan-500/30 text-slate-200 hover:border-cyan-500/50'
-                }`}
+                className="cursor-pointer w-full p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 shadow-lg bg-cyan-950/60 border-cyan-400 text-white shadow-cyan-500/20 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                    ac.isCleaning ? 'bg-cyan-500 text-slate-950' : 'bg-cyan-500/20 text-cyan-400'
-                  }`}>
-                    <Sparkles className={`w-4 h-4 ${ac.isCleaning ? 'animate-spin' : ''}`} />
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-cyan-500 text-slate-950">
+                    <Sparkles className="w-4 h-4 animate-spin" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-white">
-                        {ac.isCleaning
-                          ? (language === 'bn' ? '✨ এসি ডিপ সেলফ ক্লিন মোড সক্রিয় (CL)' : '✨ Deep Self-Clean Active (CL)')
-                          : (language === 'bn' ? '🛡️ সেলফ ক্লিন ব্যাকগ্রাউন্ড গার্ড সক্রিয়' : '🛡️ Auto-Clean Standby Guard Active')}
+                        {language === 'bn' ? '✨ এসি ডিপ সেলফ ক্লিন মোড সক্রিয় (CL)' : '✨ Deep Self-Clean Active (CL)'}
                       </span>
-                      {ac.isCleaning && (
-                        <span className="px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950 font-black text-[9px] font-mono">
-                          {Math.ceil(ac.cleanCycleRemainingMinutes ?? 15)} {language === 'bn' ? 'মি. বাকি' : 'm left'}
-                        </span>
-                      )}
+                      <span className="px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950 font-black text-[9px] font-mono">
+                        {Math.ceil(ac.cleanCycleRemainingMinutes ?? 15)} {language === 'bn' ? 'মি. বাকি' : 'm left'}
+                      </span>
                     </div>
                     <p className="text-[11px] text-cyan-300/90 leading-tight">
-                      {ac.isCleaning
-                        ? (language === 'bn'
-                          ? `ধাপ: ${ac.cleanCycleStage === 'frost' ? '১/৪ কয়েল ফ্রস্টিং' : ac.cleanCycleStage === 'wash' ? '২/৪ ড্রেন ফ্লাশ' : ac.cleanCycleStage === 'dry' ? '৩/৪ কয়েল শুকানো' : '৪/৪ প্লাজমা স্যানিটাইজ'} (ক্লিক করে বিস্তারিত দেখুন)`
-                          : `Stage: ${ac.cleanCycleStage} (tap to view details)`)
-                        : (language === 'bn'
-                          ? 'এসি অফ করার পর স্বয়ংক্রিয়ভাবে ব্লোয়ার ১০ মিনিট চলে কয়েল শুকিয়ে ছত্রাক রোধ করবে।'
-                          : 'Blower will run for 10m after power off to dry evaporator coils.')}
+                      {language === 'bn'
+                        ? `ধাপ: ${ac.cleanCycleStage === 'frost' ? '১/৪ কয়েল ফ্রস্টিং' : ac.cleanCycleStage === 'wash' ? '২/৪ ড্রেন ফ্লাশ' : ac.cleanCycleStage === 'dry' ? '৩/৪ কয়েল শুকানো' : '৪/৪ প্লাজমা স্যানিটাইজ'} (ক্লিক করে বিস্তারিত দেখুন)`
+                        : `Stage: ${ac.cleanCycleStage} (tap to view details)`}
                     </p>
                   </div>
                 </div>

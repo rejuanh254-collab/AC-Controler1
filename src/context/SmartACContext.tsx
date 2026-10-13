@@ -153,9 +153,9 @@ const DEFAULT_AC_STATE: SmartACState = {
   location: 'Master Bedroom',
   isOnline: true,
   power: true,
-  temperature: 25,
+  temperature: 27,
   mode: 'cool',
-  fanSpeed: 'low',
+  fanSpeed: 'quiet',
   swingV: 'middle',
   swingH: 'right',
   turbo: false,
@@ -163,9 +163,10 @@ const DEFAULT_AC_STATE: SmartACState = {
   sleep: false,
   displayLight: true,
   ionFilter: true,
-  autoClean: false,
+  health: true,
+  autoClean: true,
   filterCleanHours: 0,
-  quiet: false,
+  quiet: true,
   locked: false,
   brand: 'Gree',
   timerOffMinutes: 0,
@@ -315,7 +316,7 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const saved = localStorage.getItem(STORAGE_KEY_LANG);
       if (saved === 'en' || saved === 'bn') return saved;
     } catch {}
-    return 'bn';
+    return 'en';
   });
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [isSendingIR, setIsSendingIR] = useState<boolean>(false);
