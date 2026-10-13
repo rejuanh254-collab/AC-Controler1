@@ -1,4 +1,4 @@
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   try {
     const mod = await import('./index.js');
     return res.json({
@@ -6,11 +6,11 @@ export default async function handler(req: any, res: any) {
       hasDefault: Boolean(mod.default),
       keys: Object.keys(mod),
     });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(200).json({
       status: 'import_failed',
-      message: err?.message || String(err),
-      stack: err?.stack,
+      message: err && err.message ? err.message : String(err),
+      stack: err && err.stack ? err.stack : null,
     });
   }
 }
