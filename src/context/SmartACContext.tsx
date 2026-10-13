@@ -179,29 +179,34 @@ const DEFAULT_AC_STATE: SmartACState = {
 const SmartACContext = createContext<SmartACContextType | null>(null);
 
 function mergeACState(prev: SmartACState, incoming: Partial<SmartACState>): SmartACState {
-  let timer = incoming.multiStageTimer;
+  let timer = prev.multiStageTimer;
 
-  // Protect running step timer on client from stateless server overwrites:
-  if (incoming.multiStageTimer !== undefined) {
-    if (!incoming.multiStageTimer?.enabled) {
-      // Server explicitly disabled timer (e.g. user turned off AC or timer stopped)
-      timer = incoming.multiStageTimer;
-    } else if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
-      // Both have timer enabled: keep client countdown & stage index, update stages
-      timer = {
-        ...incoming.multiStageTimer,
-        currentStageIndex: prev.multiStageTimer.currentStageIndex ?? incoming.multiStageTimer.currentStageIndex,
-        currentStage: prev.multiStageTimer.currentStage ?? incoming.multiStageTimer.currentStage,
-        remainingMinutes: prev.multiStageTimer.remainingMinutes ?? incoming.multiStageTimer.remainingMinutes,
-        stageStartedAt: prev.multiStageTimer.stageStartedAt || incoming.multiStageTimer.stageStartedAt,
-        startedAt: prev.multiStageTimer.startedAt || incoming.multiStageTimer.startedAt,
-      };
-    } else {
-      timer = incoming.multiStageTimer;
-    }
+  // 1. If physical AC power was turned OFF (e.g. via physical remote or power off command), stop timer:
+  if (incoming.power === false) {
+    timer = prev.multiStageTimer
+      ? { ...prev.multiStageTimer, enabled: false, remainingMinutes: 0 }
+      : undefined;
   } else if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
-    // Incoming state did not mention timer: preserve client's running timer
+    // 2. Client has an active running timer: CLIENT IS THE RUNNING MASTER!
+    // A cold or stale serverless container must NEVER turn off, rewind, or override the client's running timer!
     timer = prev.multiStageTimer;
+
+    // If server container is missing the running timer or has mismatched stage, passively sync client timer:
+    if (
+      !incoming.multiStageTimer ||
+      !incoming.multiStageTimer.enabled ||
+      incoming.multiStageTimer.currentStageIndex !== prev.multiStageTimer.currentStageIndex
+    ) {
+      fetch('/api/ac/sync-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientState: { ...prev, multiStageTimer: prev.multiStageTimer },
+        }),
+      }).catch(() => {});
+    }
+  } else if (incoming.multiStageTimer !== undefined) {
+    timer = incoming.multiStageTimer;
   }
 
   // Authoritative temperature & power while step timer is running:
@@ -1270,21 +1275,7 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return merged;
       });
 
-      // 2. Direct hardware command to physical AC (100% immediate delivery)
-      if (activeStageToDispatch) {
-        fetch('/api/ac/set', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            power: true,
-            temperature: activeStageToDispatch.temperature,
-            fanSpeed: activeStageToDispatch.fanSpeed || 'auto',
-            displayLight: activeStageToDispatch.displayLight !== undefined ? activeStageToDispatch.displayLight : true,
-          }),
-        }).catch(() => {});
-      }
-
-      // 3. Dispatch to server with full stages and fresh stageStartedAt attached
+      // 2. Dispatch to server with full stages and fresh stageStartedAt attached
       const res = await fetch('/api/ac/step-timer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1337,13 +1328,11 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       sound.playClick(true);
       const nowIso = new Date().toISOString();
-      let targetStageToDispatch: MultiStageStep | undefined;
 
       setAc((prev) => {
         const timer = prev.multiStageTimer;
         if (!timer || !timer.stages || !timer.stages[stageIndex]) return prev;
         const targetStage = timer.stages[stageIndex];
-        targetStageToDispatch = targetStage;
 
         const updatedTimer: MultiStageTimer = {
           ...timer,
@@ -1368,24 +1357,13 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return merged;
       });
 
-      // Direct hardware command to physical AC
-      if (targetStageToDispatch) {
-        fetch('/api/ac/set', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            power: true,
-            temperature: targetStageToDispatch.temperature,
-            fanSpeed: targetStageToDispatch.fanSpeed || 'auto',
-            displayLight: targetStageToDispatch.displayLight !== undefined ? targetStageToDispatch.displayLight : true,
-          }),
-        }).catch(() => {});
-      }
-
       const res = await fetch('/api/ac/jump-stage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stageIndex }),
+        body: JSON.stringify({
+          stageIndex,
+          stages: acRef.current.multiStageTimer?.stages,
+        }),
       });
       if (res.ok) {
         const d = await res.json();

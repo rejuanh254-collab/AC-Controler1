@@ -1291,19 +1291,12 @@ app.post('/api/ac/set', async (req: Request, res: Response) => {
     if (updates.eco === undefined) acState.eco = lastActiveACSettings.eco;
     if (updates.displayLight === undefined) acState.displayLight = lastActiveACSettings.displayLight;
 
-    // Initialize multiStageTimer start times ONLY IF enabling or starting a new timer session
-    if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.startedAt) {
-      const firstStage = acState.multiStageTimer.stages?.[0];
-      const nowIso = new Date().toISOString();
-      acState.multiStageTimer.currentStageIndex = 0;
-      acState.multiStageTimer.currentStage = 1;
-      acState.multiStageTimer.startedAt = nowIso;
-      acState.multiStageTimer.stageStartedAt = nowIso;
-      acState.multiStageTimer.remainingMinutes = firstStage?.durationMinutes ?? 120;
-      if (firstStage) {
-        if (updates.temperature === undefined) acState.temperature = firstStage.temperature;
-        if (updates.mode === undefined && firstStage.mode) acState.mode = firstStage.mode;
-        if (updates.fanSpeed === undefined && firstStage.fanSpeed) acState.fanSpeed = firstStage.fanSpeed;
+    // Preserve existing stage index if timer is already enabled
+    if (acState.multiStageTimer && acState.multiStageTimer.enabled) {
+      if (!acState.multiStageTimer.startedAt) {
+        const nowIso = new Date().toISOString();
+        acState.multiStageTimer.startedAt = nowIso;
+        acState.multiStageTimer.stageStartedAt = nowIso;
       }
     }
   }
@@ -1883,7 +1876,22 @@ app.post('/api/ac/step-timer/adjust-time', async (req: Request, res: Response) =
 
 // POST /api/ac/jump-stage - Instantly jump to a specific step timer stage
 app.post('/api/ac/jump-stage', async (req: Request, res: Response) => {
-  const { stageIndex } = req.body;
+  const { stageIndex, stages: incomingStages } = req.body;
+  if (Array.isArray(incomingStages) && incomingStages.length > 0) {
+    if (!acState.multiStageTimer) {
+      acState.multiStageTimer = {
+        enabled: true,
+        currentStageIndex: 0,
+        currentStage: 1,
+        remainingMinutes: 60,
+        stages: incomingStages,
+        finalAction: 'turn_off',
+      };
+    } else {
+      acState.multiStageTimer.stages = incomingStages;
+    }
+  }
+
   if (!acState.multiStageTimer || !acState.multiStageTimer.stages || acState.multiStageTimer.stages.length === 0) {
     return res.status(400).json({ success: false, message: 'Step timer has no configured stages' });
   }
