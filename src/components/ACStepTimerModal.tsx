@@ -134,6 +134,7 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
     await setStepTimer({
       enabled: true,
       targetStageIndex: targetIdx,
+      stageStartedAt: isRunning ? activeTimer?.stageStartedAt : undefined,
       stages,
       finalAction,
       stage3Temp,
@@ -160,6 +161,7 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
     await setStepTimer({
       enabled: true,
       targetStageIndex: stageIdx,
+      stageStartedAt: new Date().toISOString(),
       stages,
       finalAction,
       stage3Temp,

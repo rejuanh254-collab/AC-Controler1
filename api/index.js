@@ -70999,13 +70999,25 @@ function loadPersistentStore() {
           const currentIdx = acState.multiStageTimer.currentStageIndex ?? 0;
           const currStage = acState.multiStageTimer.stages?.[currentIdx];
           const stageDuration = currStage?.durationMinutes || 60;
-          const elapsedMins = (Date.now() - new Date(acState.multiStageTimer.stageStartedAt).getTime()) / 6e4;
-          if (elapsedMins >= stageDuration) {
-            console.log("[STEP_TIMER] Active stage duration elapsed while server was inactive. Finishing step timer.");
-            acState.multiStageTimer.enabled = false;
-            acState.multiStageTimer.remainingMinutes = 0;
-          } else {
-            acState.multiStageTimer.remainingMinutes = Math.max(0, Math.round((stageDuration - elapsedMins) * 10) / 10);
+          const startedMs = new Date(acState.multiStageTimer.stageStartedAt).getTime();
+          if (!isNaN(startedMs)) {
+            const elapsedMins = (Date.now() - startedMs) / 6e4;
+            if (elapsedMins >= stageDuration) {
+              if (!process.env.VERCEL) {
+                const nextIdx = currentIdx + 1;
+                if (acState.multiStageTimer.stages && nextIdx < acState.multiStageTimer.stages.length) {
+                  acState.multiStageTimer.currentStageIndex = nextIdx;
+                  acState.multiStageTimer.currentStage = nextIdx + 1;
+                  acState.multiStageTimer.stageStartedAt = (/* @__PURE__ */ new Date()).toISOString();
+                  acState.multiStageTimer.remainingMinutes = acState.multiStageTimer.stages[nextIdx].durationMinutes;
+                } else {
+                  acState.multiStageTimer.enabled = false;
+                  acState.multiStageTimer.remainingMinutes = 0;
+                }
+              }
+            } else {
+              acState.multiStageTimer.remainingMinutes = Math.max(0, Math.round((stageDuration - elapsedMins) * 10) / 10);
+            }
           }
         }
       }
@@ -71614,6 +71626,9 @@ app.post("/api/ac/sync-client", (req, res) => {
   const { clientState, clientConfig, clientSchedules } = req.body;
   if (clientState && clientState.isPaired) {
     acState = { ...acState, ...clientState };
+    if (clientState.multiStageTimer) {
+      acState.multiStageTimer = clientState.multiStageTimer;
+    }
   }
   if (clientConfig) {
     directConfig = { ...directConfig, ...clientConfig };
@@ -72038,8 +72053,20 @@ app.post("/api/ac/step-timer", async (req, res) => {
     }
   } else {
     startedAt = nowIso;
-    stageStartedAt = nowIso;
-    remainingMinutes = currentActiveStage.durationMinutes;
+    const clientStartedAt = typeof req.body.stageStartedAt === "string" ? req.body.stageStartedAt : null;
+    if (clientStartedAt && !isNaN(new Date(clientStartedAt).getTime())) {
+      stageStartedAt = clientStartedAt;
+      const elapsedMs = Math.max(0, Date.now() - new Date(clientStartedAt).getTime());
+      const elapsedMins = elapsedMs / 6e4;
+      if (elapsedMins < currentActiveStage.durationMinutes) {
+        remainingMinutes = Math.max(1, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
+      } else {
+        remainingMinutes = currentActiveStage.durationMinutes;
+      }
+    } else {
+      stageStartedAt = nowIso;
+      remainingMinutes = currentActiveStage.durationMinutes;
+    }
   }
   const fAct = finalAction === "keep_running" ? "keep_running" : finalAction === "change_temp" ? "change_temp" : "turn_off";
   const timer = {
