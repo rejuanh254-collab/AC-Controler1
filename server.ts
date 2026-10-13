@@ -900,8 +900,18 @@ async function syncGreeHardwareState() {
       }
       lastGreePowerState = newPower;
 
-      // 2. Detect external temperature change via physical remote:
-      if (lastGreeTemp !== null && prevTemp !== newTemp && newTemp >= 16 && newTemp <= 30) {
+      // 2. Authoritative temperature sync:
+      const isTimerRunning = Boolean(
+        acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused
+      );
+      if (isTimerRunning) {
+        // While multi-stage automation is running, the active stage's configured temperature is authoritative!
+        const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
+        const activeStage = acState.multiStageTimer.stages?.[currIdx];
+        if (activeStage && typeof activeStage.temperature === 'number') {
+          acState.temperature = activeStage.temperature;
+        }
+      } else if (lastGreeTemp !== null && prevTemp !== newTemp && newTemp >= 16 && newTemp <= 30) {
         console.log(`[EXTERNAL_DETECTION] Temperature changed via Remote: ${prevTemp}°C -> ${newTemp}°C`);
         acState.temperature = newTemp;
         const logEntry: IRLogEntry = {
@@ -917,17 +927,7 @@ async function syncGreeHardwareState() {
         irLogs.unshift(logEntry);
         broadcastSSE('ir_blasted', logEntry);
       } else if (newTemp >= 16 && newTemp <= 30) {
-        if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
-          const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
-          const activeStage = acState.multiStageTimer.stages?.[currIdx];
-          if (activeStage) {
-            acState.temperature = activeStage.temperature;
-          } else {
-            acState.temperature = newTemp;
-          }
-        } else {
-          acState.temperature = newTemp;
-        }
+        acState.temperature = newTemp;
       }
       lastGreeTemp = newTemp;
 
@@ -1752,6 +1752,7 @@ app.post('/api/ac/step-timer', async (req: Request, res: Response) => {
       if (elapsedMins < currentActiveStage.durationMinutes) {
         remainingMinutes = Math.max(1, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
       } else {
+        stageStartedAt = nowIso;
         remainingMinutes = currentActiveStage.durationMinutes;
       }
     } else {

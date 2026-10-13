@@ -133,9 +133,19 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
     const secondStage = stages[1];
     const nowIso = new Date().toISOString();
 
-    // If restarting from stage 0 or starting fresh, reset start time to nowIso so it doesn't expire!
-    const isContinuingSameStage = isRunning && targetIdx === activeStageIndex;
-    const stageStartedAt = isContinuingSameStage && activeTimer?.stageStartedAt ? activeTimer.stageStartedAt : nowIso;
+    const isRestartingOrSwitching = !isRunning || typeof forceStartStageIdx === 'number' || targetIdx !== activeStageIndex;
+    let stageStartedAt = nowIso;
+
+    if (!isRestartingOrSwitching && activeTimer?.stageStartedAt) {
+      const elapsedMins = (Date.now() - new Date(activeTimer.stageStartedAt).getTime()) / 60000;
+      if (!isNaN(elapsedMins) && elapsedMins < stages[targetIdx].durationMinutes) {
+        // Still within active stage window
+        stageStartedAt = activeTimer.stageStartedAt;
+      } else {
+        // Expired or invalid -> fresh window starting right now
+        stageStartedAt = nowIso;
+      }
+    }
 
     await setStepTimer({
       enabled: true,

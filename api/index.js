@@ -71370,7 +71370,16 @@ async function syncGreeHardwareState() {
         }
       }
       lastGreePowerState = newPower;
-      if (lastGreeTemp !== null && prevTemp !== newTemp && newTemp >= 16 && newTemp <= 30) {
+      const isTimerRunning = Boolean(
+        acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused
+      );
+      if (isTimerRunning) {
+        const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
+        const activeStage = acState.multiStageTimer.stages?.[currIdx];
+        if (activeStage && typeof activeStage.temperature === "number") {
+          acState.temperature = activeStage.temperature;
+        }
+      } else if (lastGreeTemp !== null && prevTemp !== newTemp && newTemp >= 16 && newTemp <= 30) {
         console.log(`[EXTERNAL_DETECTION] Temperature changed via Remote: ${prevTemp}\xB0C -> ${newTemp}\xB0C`);
         acState.temperature = newTemp;
         const logEntry = {
@@ -71386,17 +71395,7 @@ async function syncGreeHardwareState() {
         irLogs.unshift(logEntry);
         broadcastSSE("ir_blasted", logEntry);
       } else if (newTemp >= 16 && newTemp <= 30) {
-        if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
-          const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
-          const activeStage = acState.multiStageTimer.stages?.[currIdx];
-          if (activeStage) {
-            acState.temperature = activeStage.temperature;
-          } else {
-            acState.temperature = newTemp;
-          }
-        } else {
-          acState.temperature = newTemp;
-        }
+        acState.temperature = newTemp;
       }
       lastGreeTemp = newTemp;
       if (newPower) {
@@ -72064,6 +72063,7 @@ app.post("/api/ac/step-timer", async (req, res) => {
       if (elapsedMins < currentActiveStage.durationMinutes) {
         remainingMinutes = Math.max(1, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
       } else {
+        stageStartedAt = nowIso;
         remainingMinutes = currentActiveStage.durationMinutes;
       }
     } else {

@@ -182,32 +182,45 @@ function mergeACState(prev: SmartACState, incoming: Partial<SmartACState>): Smar
   let timer = incoming.multiStageTimer;
 
   // Protect running step timer on client from stateless server overwrites:
-  if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
-    if (!timer || !timer.enabled) {
-      // Server returned disabled/missing timer (e.g. cold lambda container).
-      // Keep client's running timer!
-      timer = prev.multiStageTimer;
-
-      // Passively notify server container so it catches up:
-      fetch('/api/ac/sync-client', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientState: { ...prev, ...incoming, multiStageTimer: prev.multiStageTimer } }),
-      }).catch(() => {});
-    } else {
-      // Both have timer enabled: keep stageStartedAt & startedAt if server's is missing
+  if (incoming.multiStageTimer !== undefined) {
+    if (!incoming.multiStageTimer?.enabled) {
+      // Server explicitly disabled timer (e.g. user turned off AC or timer stopped)
+      timer = incoming.multiStageTimer;
+    } else if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
+      // Both have timer enabled: keep client countdown & stage index, update stages
       timer = {
-        ...prev.multiStageTimer,
-        ...timer,
-        stageStartedAt: timer.stageStartedAt || prev.multiStageTimer.stageStartedAt,
-        startedAt: timer.startedAt || prev.multiStageTimer.startedAt,
+        ...incoming.multiStageTimer,
+        currentStageIndex: prev.multiStageTimer.currentStageIndex ?? incoming.multiStageTimer.currentStageIndex,
+        currentStage: prev.multiStageTimer.currentStage ?? incoming.multiStageTimer.currentStage,
+        remainingMinutes: prev.multiStageTimer.remainingMinutes ?? incoming.multiStageTimer.remainingMinutes,
+        stageStartedAt: prev.multiStageTimer.stageStartedAt || incoming.multiStageTimer.stageStartedAt,
+        startedAt: prev.multiStageTimer.startedAt || incoming.multiStageTimer.startedAt,
       };
+    } else {
+      timer = incoming.multiStageTimer;
+    }
+  } else if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
+    // Incoming state did not mention timer: preserve client's running timer
+    timer = prev.multiStageTimer;
+  }
+
+  // Authoritative temperature & power while step timer is running:
+  let resolvedTemp = incoming.temperature !== undefined ? incoming.temperature : prev.temperature;
+  let resolvedPower = incoming.power !== undefined ? incoming.power : prev.power;
+
+  if (timer?.enabled && !timer.paused && timer.stages && timer.stages.length > 0) {
+    const activeStage = timer.stages[timer.currentStageIndex ?? 0];
+    if (activeStage && typeof activeStage.temperature === 'number') {
+      resolvedTemp = activeStage.temperature;
+      resolvedPower = true;
     }
   }
 
   const merged: SmartACState = {
     ...prev,
     ...incoming,
+    temperature: resolvedTemp,
+    power: resolvedPower,
     multiStageTimer: timer,
   };
 
@@ -1055,6 +1068,38 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const setTemperature = async (temp: number) => {
     const clamped = Math.max(16, Math.min(30, temp));
+    // If step timer is active, update the active stage temperature in sync!
+    if (ac.multiStageTimer?.enabled && ac.multiStageTimer.stages && ac.multiStageTimer.stages.length > 0) {
+      const currIdx = ac.multiStageTimer.currentStageIndex ?? 0;
+      const updatedStages = ac.multiStageTimer.stages.map((stg, i) =>
+        i === currIdx ? { ...stg, temperature: clamped } : stg
+      );
+      setAc((prev) => {
+        if (!prev.multiStageTimer) return { ...prev, temperature: clamped, power: true };
+        const updatedTimer: MultiStageTimer = {
+          ...prev.multiStageTimer,
+          stages: updatedStages,
+        };
+        const merged: SmartACState = {
+          ...prev,
+          temperature: clamped,
+          power: true,
+          multiStageTimer: updatedTimer,
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
+        } catch {}
+        return merged;
+      });
+
+      // Passively update backend stage configuration
+      fetch('/api/ac/step-timer/adjust-time', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stageIndex: currIdx, temperature: clamped }),
+      }).catch(() => {});
+    }
+
     await updateAC({ temperature: clamped, power: true });
   };
 
@@ -1161,6 +1206,7 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       sound.playClick(true);
       const nowIso = new Date().toISOString();
+      let activeStageToDispatch: MultiStageStep | undefined;
 
       // 1. Optimistically apply to client state & localStorage immediately!
       setAc((prev) => {
@@ -1175,12 +1221,23 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
           : [];
 
         const activeStage = resolvedStages[targetIdx] || resolvedStages[0];
+        activeStageToDispatch = activeStage;
+
         const isKeepingStage = Boolean(prevTimer?.enabled && targetIdx === prevTimer.currentStageIndex);
-        const stageStartedAt = config.stageStartedAt || (isKeepingStage && prevTimer?.stageStartedAt ? prevTimer.stageStartedAt : nowIso);
+        let stageStartedAt = config.stageStartedAt || (isKeepingStage && prevTimer?.stageStartedAt ? prevTimer.stageStartedAt : nowIso);
+        
+        // Prevent immediate expiry: if elapsed time is greater than stage duration, reset to nowIso!
+        const elapsedMins = (Date.now() - new Date(stageStartedAt).getTime()) / 60000;
+        if (isNaN(elapsedMins) || elapsedMins >= (activeStage?.durationMinutes || 60)) {
+          stageStartedAt = nowIso;
+        }
+
         const startedAt = isKeepingStage && prevTimer?.startedAt ? prevTimer.startedAt : nowIso;
-        const remMins = isKeepingStage && typeof prevTimer?.remainingMinutes === 'number' && prevTimer.remainingMinutes > 0
-          ? prevTimer.remainingMinutes
-          : (activeStage?.durationMinutes || 60);
+        const remMins = (stageStartedAt === nowIso)
+          ? (activeStage?.durationMinutes || 60)
+          : (isKeepingStage && typeof prevTimer?.remainingMinutes === 'number' && prevTimer.remainingMinutes > 0
+            ? prevTimer.remainingMinutes
+            : (activeStage?.durationMinutes || 60));
 
         const newTimer: MultiStageTimer = {
           enabled: true,
@@ -1213,7 +1270,21 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return merged;
       });
 
-      // 2. Dispatch to server with full stages and stageStartedAt attached
+      // 2. Direct hardware command to physical AC (100% immediate delivery)
+      if (activeStageToDispatch) {
+        fetch('/api/ac/set', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            power: true,
+            temperature: activeStageToDispatch.temperature,
+            fanSpeed: activeStageToDispatch.fanSpeed || 'auto',
+            displayLight: activeStageToDispatch.displayLight !== undefined ? activeStageToDispatch.displayLight : true,
+          }),
+        }).catch(() => {});
+      }
+
+      // 3. Dispatch to server with full stages and fresh stageStartedAt attached
       const res = await fetch('/api/ac/step-timer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1266,10 +1337,14 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       sound.playClick(true);
       const nowIso = new Date().toISOString();
+      let targetStageToDispatch: MultiStageStep | undefined;
+
       setAc((prev) => {
         const timer = prev.multiStageTimer;
         if (!timer || !timer.stages || !timer.stages[stageIndex]) return prev;
         const targetStage = timer.stages[stageIndex];
+        targetStageToDispatch = targetStage;
+
         const updatedTimer: MultiStageTimer = {
           ...timer,
           enabled: true,
@@ -1292,6 +1367,20 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } catch {}
         return merged;
       });
+
+      // Direct hardware command to physical AC
+      if (targetStageToDispatch) {
+        fetch('/api/ac/set', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            power: true,
+            temperature: targetStageToDispatch.temperature,
+            fanSpeed: targetStageToDispatch.fanSpeed || 'auto',
+            displayLight: targetStageToDispatch.displayLight !== undefined ? targetStageToDispatch.displayLight : true,
+          }),
+        }).catch(() => {});
+      }
 
       const res = await fetch('/api/ac/jump-stage', {
         method: 'POST',
