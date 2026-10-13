@@ -37,7 +37,10 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const STORE_FILE = path.join(__dirname, 'smart-ac-data.json');
+const BUNDLED_STORE_FILE = path.join(__dirname, 'smart-ac-data.json');
+const STORE_FILE = process.env.VERCEL
+  ? path.join('/tmp', 'smart-ac-data.json')
+  : BUNDLED_STORE_FILE;
 
 const app = express();
 const ai = new GoogleGenAI();
@@ -379,8 +382,12 @@ function savePersistentStore() {
 
 function loadPersistentStore() {
   try {
-    if (fs.existsSync(STORE_FILE)) {
-      const raw = fs.readFileSync(STORE_FILE, 'utf-8');
+    let sourcePath = STORE_FILE;
+    if (!fs.existsSync(sourcePath) && fs.existsSync(BUNDLED_STORE_FILE)) {
+      sourcePath = BUNDLED_STORE_FILE;
+    }
+    if (fs.existsSync(sourcePath)) {
+      const raw = fs.readFileSync(sourcePath, 'utf-8');
       const data = JSON.parse(raw);
       if (data.acState) acState = { ...acState, ...data.acState };
       if (data.directConfig) directConfig = { ...directConfig, ...data.directConfig };
@@ -3583,4 +3590,9 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
+export { app };
