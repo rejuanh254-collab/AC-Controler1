@@ -5,10 +5,11 @@ import './index.css';
 import { registerSW } from 'virtual:pwa-register';
 
 // Register PWA service worker with auto-update & offline readiness
-registerSW({
+const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    console.log('CoolHome AC: New update available');
+    console.log('CoolHome AC: New update available, applying immediately...');
+    updateSW(true);
   },
   onOfflineReady() {
     console.log('CoolHome AC: App is ready for offline standalone usage');
