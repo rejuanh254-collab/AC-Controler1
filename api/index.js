@@ -43317,9 +43317,9 @@ var require_event_target = __commonJS({
        *     the listener would be automatically removed when invoked.
        * @public
        */
-      addEventListener(type, handler2, options = {}) {
+      addEventListener(type, handler, options = {}) {
         for (const listener of this.listeners(type)) {
-          if (!options[kForOnEventAttribute] && listener[kListener] === handler2 && !listener[kForOnEventAttribute]) {
+          if (!options[kForOnEventAttribute] && listener[kListener] === handler && !listener[kForOnEventAttribute]) {
             return;
           }
         }
@@ -43330,7 +43330,7 @@ var require_event_target = __commonJS({
               data: isBinary ? data : data.toString()
             });
             event[kTarget] = this;
-            callListener(handler2, this, event);
+            callListener(handler, this, event);
           };
         } else if (type === "close") {
           wrapper = function onClose(code, message) {
@@ -43340,7 +43340,7 @@ var require_event_target = __commonJS({
               wasClean: this._closeFrameReceived && this._closeFrameSent
             });
             event[kTarget] = this;
-            callListener(handler2, this, event);
+            callListener(handler, this, event);
           };
         } else if (type === "error") {
           wrapper = function onError(error) {
@@ -43349,19 +43349,19 @@ var require_event_target = __commonJS({
               message: error.message
             });
             event[kTarget] = this;
-            callListener(handler2, this, event);
+            callListener(handler, this, event);
           };
         } else if (type === "open") {
           wrapper = function onOpen() {
             const event = new Event("open");
             event[kTarget] = this;
-            callListener(handler2, this, event);
+            callListener(handler, this, event);
           };
         } else {
           return;
         }
         wrapper[kForOnEventAttribute] = !!options[kForOnEventAttribute];
-        wrapper[kListener] = handler2;
+        wrapper[kListener] = handler;
         if (options.once) {
           this.once(type, wrapper);
         } else {
@@ -43375,9 +43375,9 @@ var require_event_target = __commonJS({
        * @param {(Function|Object)} handler The listener to remove
        * @public
        */
-      removeEventListener(type, handler2) {
+      removeEventListener(type, handler) {
         for (const listener of this.listeners(type)) {
-          if (listener[kListener] === handler2 && !listener[kForOnEventAttribute]) {
+          if (listener[kListener] === handler && !listener[kForOnEventAttribute]) {
             this.removeListener(type, listener);
             break;
           }
@@ -44030,15 +44030,15 @@ var require_websocket = __commonJS({
           }
           return null;
         },
-        set(handler2) {
+        set(handler) {
           for (const listener of this.listeners(method)) {
             if (listener[kForOnEventAttribute]) {
               this.removeListener(method, listener);
               break;
             }
           }
-          if (typeof handler2 !== "function") return;
-          this.addEventListener(method, handler2, {
+          if (typeof handler !== "function") return;
+          this.addEventListener(method, handler, {
             [kForOnEventAttribute]: true
           });
         }
@@ -68357,7 +68357,7 @@ var smart_ac_data_default = {
     location: "Master Bedroom",
     isOnline: true,
     power: true,
-    temperature: 25,
+    temperature: 27,
     mode: "cool",
     fanSpeed: "low",
     swingV: "middle",
@@ -68365,7 +68365,7 @@ var smart_ac_data_default = {
     turbo: false,
     eco: false,
     sleep: false,
-    displayLight: true,
+    displayLight: false,
     ionFilter: true,
     autoClean: false,
     filterCleanHours: 0,
@@ -68376,12 +68376,12 @@ var smart_ac_data_default = {
     timerOnMinutes: 0,
     lastIrCommand: "SELF-CLEAN CYCLE CANCELLED",
     lastIrHex: "0xGR01010119CE",
-    lastUpdated: "2026-10-08T16:49:02.776Z",
+    lastUpdated: "2026-10-13T17:41:20.907Z",
     multiStageTimer: {
-      enabled: true,
+      enabled: false,
       currentStageIndex: 0,
       currentStage: 1,
-      remainingMinutes: 44.6,
+      remainingMinutes: 0,
       stages: [
         {
           id: "stg-1",
@@ -68637,13 +68637,13 @@ var smart_ac_data_default = {
     }
   ],
   lastActiveACSettings: {
-    temperature: 25,
+    temperature: 27,
     mode: "cool",
     fanSpeed: "low",
     quiet: false,
     turbo: false,
     eco: false,
-    displayLight: true,
+    displayLight: false,
     ionFilter: true,
     health: true,
     swingV: "middle",
@@ -69153,23 +69153,23 @@ var smart_ac_data_default = {
     }
   ],
   powerTelemetry: {
-    watts: 1022,
+    watts: 1107,
     voltage: 228.4,
-    current: 4.47,
+    current: 4.85,
     tonnage: 1.5,
-    inverterLoadPercent: 66,
+    inverterLoadPercent: 73,
     unitRateBdt: 7,
     currency: "BDT",
-    todayKwh: 0.504,
-    monthlyKwh: 6.612075555555352,
-    costBdt: 3.53,
-    monthlyCostBdt: 46.99548888888322,
-    currentSessionStartTime: "2026-10-08T16:30:40.835Z",
-    currentSessionDurationMinutes: 18,
-    currentSessionKwh: 0.3708177777777778,
-    currentSessionCostBdt: 2.595724444444453,
-    todayRuntimeMinutes: 198,
-    turnOnCountToday: 2,
+    todayKwh: 2e-3,
+    monthlyKwh: 6.614535555555351,
+    costBdt: 0.02,
+    monthlyCostBdt: 47.01270888888322,
+    currentSessionStartTime: "2026-10-12T18:00:00.000Z",
+    currentSessionDurationMinutes: 1421,
+    currentSessionKwh: 246e-5,
+    currentSessionCostBdt: 0.01722,
+    todayRuntimeMinutes: 1421,
+    turnOnCountToday: 1,
     recentSessions: [
       {
         id: "sess-1791476855770",
@@ -69306,9 +69306,18 @@ var smart_ac_data_default = {
     ],
     dailyHistory: [
       {
-        date: "2026-10-08",
+        date: "2026-10-13",
         dayName: "\u0986\u099C (Today)",
-        totalRuntimeMinutes: 198,
+        totalRuntimeMinutes: 1421,
+        turnOnCount: 1,
+        totalKwh: 2e-3,
+        totalCostBdt: 0.02,
+        sessions: []
+      },
+      {
+        date: "2026-10-08",
+        dayName: "08 \u0985\u0995\u09CD\u099F\u09CB\u09AC\u09B0",
+        totalRuntimeMinutes: 1440,
         turnOnCount: 2,
         totalKwh: 0.504,
         totalCostBdt: 3.53,
@@ -69728,18 +69737,9 @@ var smart_ac_data_default = {
         totalKwh: 3.25,
         totalCostBdt: 27.63,
         sessions: []
-      },
-      {
-        date: "2026-09-05",
-        dayName: "05 \u09B8\u09C7\u09AA\u09CD\u099F\u09C7\u09AE\u09CD\u09AC\u09B0",
-        totalRuntimeMinutes: 340,
-        turnOnCount: 2,
-        totalKwh: 2.3,
-        totalCostBdt: 19.55,
-        sessions: []
       }
     ],
-    lastCheckedDate: "2026-10-08"
+    lastCheckedDate: "2026-10-13"
   }
 };
 
@@ -73641,18 +73641,9 @@ if (isDirectRun && !process.env.VERCEL) {
 var server_default = app;
 
 // src/api/index.ts
-function handler(req, res) {
-  let targetUrl = req.originalUrl || req.url || "/";
-  if (!targetUrl.startsWith("/api")) {
-    targetUrl = `/api${targetUrl.startsWith("/") ? "" : "/"}${targetUrl}`;
-  }
-  req.url = targetUrl;
-  return server_default(req, res);
-}
-var index_default = handler;
+var index_default = server_default;
 export {
-  index_default as default,
-  handler
+  index_default as default
 };
 /*! Bundled license information:
 
