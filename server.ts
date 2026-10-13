@@ -1,12 +1,12 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import http from 'http';
-import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import bundledStoreData from './smart-ac-data.json';
 import type {
   SmartACState,
   ACFanSpeed,
@@ -35,15 +35,19 @@ import {
   type GreeRegion,
 } from './src/server/greeCloud.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const BUNDLED_STORE_FILE = path.join(__dirname, 'smart-ac-data.json');
+const appDir = typeof __dirname !== 'undefined'
+  ? __dirname
+  : (typeof import.meta !== 'undefined' && (import.meta as any).url ? path.dirname(fileURLToPath((import.meta as any).url)) : process.cwd());
+const BUNDLED_STORE_FILE = path.join(appDir, 'smart-ac-data.json');
 const STORE_FILE = process.env.VERCEL
   ? path.join('/tmp', 'smart-ac-data.json')
   : BUNDLED_STORE_FILE;
 
 const app = express();
-const ai = new GoogleGenAI();
+let ai: any = null;
+try {
+  ai = new GoogleGenAI();
+} catch {}
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
@@ -386,9 +390,14 @@ function loadPersistentStore() {
     if (!fs.existsSync(sourcePath) && fs.existsSync(BUNDLED_STORE_FILE)) {
       sourcePath = BUNDLED_STORE_FILE;
     }
+    let data: any = null;
     if (fs.existsSync(sourcePath)) {
       const raw = fs.readFileSync(sourcePath, 'utf-8');
-      const data = JSON.parse(raw);
+      data = JSON.parse(raw);
+    } else if (bundledStoreData) {
+      data = bundledStoreData;
+    }
+    if (data) {
       if (data.acState) acState = { ...acState, ...data.acState };
       if (data.directConfig) directConfig = { ...directConfig, ...data.directConfig };
       if (data.greeCloudSession) greeCloudSession = { ...greeCloudSession, ...data.greeCloudSession };
@@ -749,11 +758,13 @@ function calculatePowerAndClimate() {
   climate.roomHumidity = Number(Math.max(30, Math.min(95, climate.roomHumidity + humJitter)).toFixed(1));
 }
 
-setInterval(() => {
-  calculatePowerAndClimate();
-  broadcastSSE('climate_updated', climate);
-  broadcastSSE('power_updated', powerTelemetry);
-}, 4000);
+if (!process.env.VERCEL) {
+  setInterval(() => {
+    calculatePowerAndClimate();
+    broadcastSSE('climate_updated', climate);
+    broadcastSSE('power_updated', powerTelemetry);
+  }, 4000);
+}
 
 // Continuous background sync with physical Gree AC to detect physical remote or Gree+ app state
 let isSyncingGree = false;
@@ -1004,7 +1015,9 @@ async function syncGreeHardwareState() {
 }
 
 // Background poller every 8 seconds to instantly detect physical remote or Gree+ app controls
-setInterval(syncGreeHardwareState, 8000);
+if (!process.env.VERCEL) {
+  setInterval(syncGreeHardwareState, 8000);
+}
 
 // SSE Stream Endpoint
 app.get('/api/events', (req: Request, res: Response) => {
@@ -1870,7 +1883,8 @@ app.post('/api/ac/jump-stage', async (req: Request, res: Response) => {
 });
 
 // Background Multi-Stage Step Timer Runner (10s ticker)
-setInterval(async () => {
+if (!process.env.VERCEL) {
+  setInterval(async () => {
   if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
     const timer = acState.multiStageTimer;
     const currentIdx = timer.currentStageIndex ?? (timer.currentStage ? timer.currentStage - 1 : 0);
@@ -2021,10 +2035,12 @@ setInterval(async () => {
       savePersistentStore();
     }
   }
-}, 10000);
+  }, 10000);
+}
 
 // Background Sleep Curve Runner (10s ticker)
-setInterval(async () => {
+if (!process.env.VERCEL) {
+  setInterval(async () => {
   if (acState.activeCurve && acState.activeCurve.enabled && !acState.activeCurve.paused) {
     const active = acState.activeCurve;
     const curve = sleepCurves.find((c) => c.id === active.curveId);
@@ -2101,7 +2117,8 @@ setInterval(async () => {
       }
     }
   }
-}, 10000);
+  }, 10000);
+}
 
 // GET /api/ac/curves
 app.get('/api/ac/curves', (req: Request, res: Response) => {
@@ -2344,7 +2361,8 @@ app.post('/api/ac/clean-cycle/cancel', (req: Request, res: Response) => {
 });
 
 // 5s Background Runner for Active Deep Clean Cycle
-setInterval(() => {
+if (!process.env.VERCEL) {
+  setInterval(() => {
   if (acState.isCleaning && cleanCycleStartedAt) {
     const elapsedMs = Math.max(0, Date.now() - cleanCycleStartedAt);
     const elapsedMins = elapsedMs / 60000;
@@ -2387,7 +2405,8 @@ setInterval(() => {
     savePersistentStore();
     broadcastSSE('ac_state_changed', acState);
   }
-}, 5000);
+  }, 5000);
+}
 
 // POST /api/ac/power-settings
 app.post('/api/ac/power-settings', (req: Request, res: Response) => {
@@ -3238,7 +3257,8 @@ function getLocalScheduleTime(offsetMinutes: number = userTimezoneOffsetMinutes)
 }
 
 // Background scheduler checker (runs every 5 seconds for pinpoint accuracy)
-setInterval(async () => {
+if (!process.env.VERCEL) {
+  setInterval(async () => {
   const { currentTime, currentDay, currentMinKey } = getLocalScheduleTime();
 
   for (const s of schedules) {
@@ -3323,7 +3343,8 @@ setInterval(async () => {
       broadcastSSE('schedules_updated', schedules);
     }
   }
-}, 5000);
+  }, 5000);
+}
 
 app.post('/api/ac/timezone', (req: Request, res: Response) => {
   const { offsetMinutes } = req.body;
@@ -3548,20 +3569,20 @@ app.get('/api/firmware/esp32-ac', (req: Request, res: Response) => {
 app.get('/manifest.webmanifest', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.sendFile(path.join(__dirname, 'public', 'manifest.webmanifest'));
+  res.sendFile(path.join(appDir, 'public', 'manifest.webmanifest'));
 });
 
 app.get('/manifest.json', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
+  res.sendFile(path.join(appDir, 'public', 'manifest.json'));
 });
 
 app.get('/sw.js', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
   res.setHeader('Service-Worker-Allowed', '/');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.sendFile(path.join(__dirname, 'public', 'sw.js'));
+  res.sendFile(path.join(appDir, 'public', 'sw.js'));
 });
 
 // Mount Vite in Development
@@ -3570,6 +3591,8 @@ async function startServer() {
 
   if (process.env.NODE_ENV !== 'production') {
     const isHmrDisabled = process.env.DISABLE_HMR === 'true';
+    const vitePkg = 'vite';
+    const { createServer: createViteServer } = await (import(vitePkg) as Promise<any>);
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -3579,9 +3602,9 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(__dirname, 'dist')));
+    app.use(express.static(path.join(appDir, 'dist')));
     app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+      res.sendFile(path.join(appDir, 'dist', 'index.html'));
     });
   }
 

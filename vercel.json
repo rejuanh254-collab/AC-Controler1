@@ -5,6 +5,10 @@
     {
       "source": "/api/:match*",
       "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
