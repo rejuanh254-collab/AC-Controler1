@@ -71311,13 +71311,6 @@ async function syncGreeHardwareState() {
         console.log("[GREE_SYNC] Active command dispatch grace period. Skipping hardware state overwrite.");
         return;
       }
-      if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
-        const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
-        const activeStage = acState.multiStageTimer.stages?.[currIdx];
-        if (activeStage && cloud.state.targetTemp !== void 0) {
-          activeStage.temperature = cloud.state.targetTemp;
-        }
-      }
       const prevPower = acState.power;
       const newPower = cloud.state.power;
       const prevTemp = acState.temperature;
@@ -71393,7 +71386,17 @@ async function syncGreeHardwareState() {
         irLogs.unshift(logEntry);
         broadcastSSE("ir_blasted", logEntry);
       } else if (newTemp >= 16 && newTemp <= 30) {
-        acState.temperature = newTemp;
+        if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
+          const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
+          const activeStage = acState.multiStageTimer.stages?.[currIdx];
+          if (activeStage) {
+            acState.temperature = activeStage.temperature;
+          } else {
+            acState.temperature = newTemp;
+          }
+        } else {
+          acState.temperature = newTemp;
+        }
       }
       lastGreeTemp = newTemp;
       if (newPower) {
@@ -72096,12 +72099,7 @@ app.post("/api/ac/step-timer", async (req, res) => {
   acState.multiStageTimer = timer;
   const prevStage = prevTimer?.stages?.[startIdx];
   const hasHardwareSettingsChanged = !isKeepingActiveStage || !prevStage || !acState.power || prevStage.temperature !== currentActiveStage.temperature || prevStage.fanSpeed !== currentActiveStage.fanSpeed || prevStage.displayLight !== currentActiveStage.displayLight || prevStage.mode !== currentActiveStage.mode || acState.temperature !== currentActiveStage.temperature || acState.fanSpeed !== currentActiveStage.fanSpeed || acState.displayLight !== currentActiveStage.displayLight || currentActiveStage.mode && acState.mode !== currentActiveStage.mode;
-  if (hasHardwareSettingsChanged) {
-    await applyStageSettings(currentActiveStage, startIdx, processedStages.length, isKeepingActiveStage ? "auto_advance" : "timer_start");
-  } else {
-    savePersistentStore();
-    broadcastSSE("ac_state_changed", acState);
-  }
+  await applyStageSettings(currentActiveStage, startIdx, processedStages.length, isKeepingActiveStage ? "auto_advance" : "timer_start");
   res.json({
     success: true,
     state: acState,

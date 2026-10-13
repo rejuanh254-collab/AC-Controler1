@@ -693,112 +693,85 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => clearInterval(schedTimer);
   }, [schedules]);
 
+  const acRef = useRef(ac);
+  useEffect(() => {
+    acRef.current = ac;
+  }, [ac]);
+
   // Client-side Multi-Stage Step Timer Runner (100% reliable countdown & stage progression on Vercel)
   useEffect(() => {
     const timerInterval = setInterval(() => {
-      setAc((prev) => {
-        const timer = prev.multiStageTimer;
-        if (!timer || !timer.enabled || timer.paused || !timer.stages || timer.stages.length === 0) {
-          return prev;
+      const currentAc = acRef.current;
+      const timer = currentAc.multiStageTimer;
+      if (!timer || !timer.enabled || timer.paused || !timer.stages || timer.stages.length === 0) {
+        return;
+      }
+
+      const currIdx = timer.currentStageIndex ?? 0;
+      const currentStage = timer.stages[currIdx];
+      if (!currentStage) return;
+
+      const stageDuration = currentStage.durationMinutes || 60;
+      const stageStartedAtMs = timer.stageStartedAt ? new Date(timer.stageStartedAt).getTime() : Date.now();
+
+      // If timestamp is corrupt or missing, initialize it to now:
+      if (isNaN(stageStartedAtMs)) {
+        const nowIso = new Date().toISOString();
+        setAc((prev) => {
+          if (!prev.multiStageTimer) return prev;
+          const updated = { ...prev.multiStageTimer, stageStartedAt: nowIso };
+          try {
+            localStorage.setItem(STORAGE_KEY_AC, JSON.stringify({ ...prev, multiStageTimer: updated }));
+          } catch {}
+          return { ...prev, multiStageTimer: updated };
+        });
+        return;
+      }
+
+      const elapsedMins = (Date.now() - stageStartedAtMs) / 60000;
+      const remainingMins = Math.max(0, stageDuration - elapsedMins);
+
+      // Check if current stage has completed
+      if (elapsedMins >= stageDuration) {
+        console.log(`[CLIENT_STEP_TIMER] Stage ${currIdx + 1} completed! Action: ${currentStage.action}`);
+
+        if (currentStage.action === 'turn_off') {
+          cancelStepTimer();
+          updateAC({ power: false });
+          return;
         }
 
-        const currIdx = timer.currentStageIndex ?? 0;
-        const currentStage = timer.stages[currIdx];
-        if (!currentStage) return prev;
-
-        const stageDuration = currentStage.durationMinutes || 60;
-        const stageStartedAtMs = timer.stageStartedAt ? new Date(timer.stageStartedAt).getTime() : Date.now();
-        const elapsedMins = (Date.now() - stageStartedAtMs) / 60000;
-        const remainingMins = Math.max(0, stageDuration - elapsedMins);
-
-        // Stage duration has elapsed!
-        if (elapsedMins >= stageDuration) {
-          console.log(`[CLIENT_STEP_TIMER] Stage ${currIdx + 1} completed! Action: ${currentStage.action}`);
-
-          // If this stage action is turn_off:
-          if (currentStage.action === 'turn_off') {
-            const updatedTimer: MultiStageTimer = { ...timer, enabled: false, remainingMinutes: 0 };
-            const merged: SmartACState = { ...prev, power: false, multiStageTimer: updatedTimer };
-            try {
-              localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
-            } catch {}
+        const nextIdx = currIdx + 1;
+        if (nextIdx < timer.stages.length) {
+          // Auto advance to next stage!
+          jumpToStage(nextIdx);
+        } else {
+          // All stages completed -> execute finalAction
+          console.log(`[CLIENT_STEP_TIMER] All stages completed! Final Action: ${timer.finalAction}`);
+          if (timer.finalAction === 'turn_off') {
+            cancelStepTimer();
             updateAC({ power: false });
-            return merged;
-          }
-
-          const nextIdx = currIdx + 1;
-          if (nextIdx < timer.stages.length) {
-            // Auto advance to next stage!
-            const nextStage = timer.stages[nextIdx];
-            console.log(`[CLIENT_STEP_TIMER] Auto-advancing to Stage ${nextIdx + 1} (${nextStage.temperature}°C, ${nextStage.durationMinutes}m)`);
-            const nowIso = new Date().toISOString();
-            const updatedTimer: MultiStageTimer = {
-              ...timer,
-              currentStageIndex: nextIdx,
-              currentStage: nextIdx + 1,
-              stageStartedAt: nowIso,
-              remainingMinutes: nextStage.durationMinutes,
-            };
-            const merged: SmartACState = {
-              ...prev,
-              temperature: nextStage.temperature,
-              fanSpeed: nextStage.fanSpeed || prev.fanSpeed,
-              displayLight: nextStage.displayLight !== undefined ? nextStage.displayLight : prev.displayLight,
-              power: true,
-              multiStageTimer: updatedTimer,
-            };
-            try {
-              localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
-            } catch {}
-
-            // Send jump command to AC hardware
-            fetch('/api/ac/jump-stage', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ stageIndex: nextIdx }),
-            }).catch(() => {});
-
-            return merged;
+          } else if (timer.finalAction === 'change_temp') {
+            const targetTemp = timer.stage3Temp || 27;
+            cancelStepTimer();
+            updateAC({ temperature: targetTemp });
           } else {
-            // All stages completed -> execute finalAction
-            console.log(`[CLIENT_STEP_TIMER] All stages completed! Final Action: ${timer.finalAction}`);
-            const updatedTimer: MultiStageTimer = { ...timer, enabled: false, remainingMinutes: 0 };
-
-            if (timer.finalAction === 'turn_off') {
-              const merged: SmartACState = { ...prev, power: false, multiStageTimer: updatedTimer };
-              try {
-                localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
-              } catch {}
-              updateAC({ power: false });
-              return merged;
-            } else if (timer.finalAction === 'change_temp') {
-              const targetTemp = timer.stage3Temp || 27;
-              const merged: SmartACState = { ...prev, temperature: targetTemp, multiStageTimer: updatedTimer };
-              try {
-                localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
-              } catch {}
-              updateAC({ temperature: targetTemp });
-              return merged;
-            } else {
-              // keep_running
-              const merged: SmartACState = { ...prev, multiStageTimer: updatedTimer };
-              try {
-                localStorage.setItem(STORAGE_KEY_AC, JSON.stringify(merged));
-              } catch {}
-              return merged;
-            }
+            // keep_running
+            cancelStepTimer();
           }
         }
+        return;
+      }
 
-        // Within active stage: smoothly tick remainingMinutes in state
-        const roundedRem = Math.round(remainingMins * 10) / 10;
-        if (Math.abs((timer.remainingMinutes || 0) - roundedRem) >= 0.1) {
-          const updatedTimer: MultiStageTimer = { ...timer, remainingMinutes: roundedRem };
+      // Smoothly tick remaining countdown minutes in state
+      const roundedRem = Math.round(remainingMins * 10) / 10;
+      if (Math.abs((timer.remainingMinutes || 0) - roundedRem) >= 0.1) {
+        setAc((prev) => {
+          if (!prev.multiStageTimer || !prev.multiStageTimer.enabled) return prev;
+          const updatedTimer = { ...prev.multiStageTimer, remainingMinutes: roundedRem };
           return { ...prev, multiStageTimer: updatedTimer };
-        }
-
-        return prev;
-      });
+        });
+      }
     }, 2000);
 
     return () => clearInterval(timerInterval);
@@ -1240,11 +1213,16 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return merged;
       });
 
-      // 2. Dispatch to server with stageStartedAt attached
+      // 2. Dispatch to server with full stages and stageStartedAt attached
       const res = await fetch('/api/ac/step-timer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
+        body: JSON.stringify({
+          ...config,
+          stages: config.stages || acRef.current.multiStageTimer?.stages,
+          targetStageIndex: config.targetStageIndex,
+          stageStartedAt: config.stageStartedAt || nowIso,
+        }),
       });
       if (res.ok) {
         const d = await res.json();

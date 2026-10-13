@@ -124,17 +124,23 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
     setStages(copy);
   };
 
-  // Start timer from Stage 1 or update running timer
-  const handleStart = async () => {
-    // CRITICAL: If timer is already running, KEEP CURRENT ACTIVE STAGE! DO NOT RESET TO STAGE 1!
-    const targetIdx = isRunning ? activeStageIndex : 0;
+  // Start timer from specified stage or update running timer
+  const handleStart = async (forceStartStageIdx?: number) => {
+    const targetIdx = typeof forceStartStageIdx === 'number'
+      ? forceStartStageIdx
+      : (isRunning ? activeStageIndex : 0);
     const firstStage = stages[0];
     const secondStage = stages[1];
+    const nowIso = new Date().toISOString();
+
+    // If restarting from stage 0 or starting fresh, reset start time to nowIso so it doesn't expire!
+    const isContinuingSameStage = isRunning && targetIdx === activeStageIndex;
+    const stageStartedAt = isContinuingSameStage && activeTimer?.stageStartedAt ? activeTimer.stageStartedAt : nowIso;
 
     await setStepTimer({
       enabled: true,
       targetStageIndex: targetIdx,
-      stageStartedAt: isRunning ? activeTimer?.stageStartedAt : undefined,
+      stageStartedAt: stageStartedAt,
       stages,
       finalAction,
       stage3Temp,
@@ -827,35 +833,57 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2">
           {isRunning ? (
-            <button
-              onClick={handleStop}
-              className="flex-1 py-3 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
-            >
-              <Square className="w-4 h-4" />
-              <span>{language === 'bn' ? 'টাইমার বাতিল / বন্ধ করুন' : 'Cancel & Stop Timer'}</span>
-            </button>
-          ) : (
-            <button
-              onClick={onClose}
-              className="px-4 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl font-semibold text-xs transition-colors"
-            >
-              {language === 'bn' ? 'বাতিল' : 'Cancel'}
-            </button>
-          )}
+            <>
+              <button
+                type="button"
+                onClick={handleStop}
+                className="py-3 px-4 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all shrink-0"
+              >
+                <Square className="w-4 h-4" />
+                <span>{language === 'bn' ? 'টাইমার বন্ধ করুন' : 'Stop Timer'}</span>
+              </button>
 
-          <button
-            onClick={handleStart}
-            className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all hover:scale-102 active:scale-98"
-          >
-            <Play className="w-4 h-4 fill-current" />
-            <span>
-              {isRunning
-                ? (language === 'bn' ? `টাইমার আপডেট করুন (স্টেজ ${activeStageIndex + 1} বজায় থাকবে)` : `Update Timer (Keep Stage ${activeStageIndex + 1})`)
-                : (language === 'bn' ? 'স্টেপ টাইমার চালু করুন' : 'Start Step Timer')}
-            </span>
-          </button>
+              <button
+                type="button"
+                onClick={() => handleStart(0)}
+                className="flex-1 py-3 px-3 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                title={language === 'bn' ? '১ম স্টেজ থেকে পুনরায় নতুন করে শুরু করুন' : 'Restart from Stage 1'}
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>{language === 'bn' ? 'স্টেজ ১ থেকে রিস্টার্ট' : 'Restart Stage 1'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleStart()}
+                className="flex-1 py-3 px-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all hover:scale-102 active:scale-98"
+              >
+                <Check className="w-4 h-4" />
+                <span>{language === 'bn' ? `স্টেজ ${activeStageIndex + 1} সেটিং আপডেট` : `Update Stage ${activeStageIndex + 1}`}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl font-semibold text-xs transition-colors"
+              >
+                {language === 'bn' ? 'বাতিল' : 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleStart(0)}
+                className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all hover:scale-102 active:scale-98"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>{language === 'bn' ? 'স্টেপ টাইমার চালু করুন (স্টেজ ১)' : 'Start Step Timer (Stage 1)'}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -835,15 +835,6 @@ async function syncGreeHardwareState() {
         return;
       }
 
-      // If a multi-stage step timer is running, keep stage in sync passively without re-dispatching commands or beeping
-      if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
-        const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
-        const activeStage = acState.multiStageTimer.stages?.[currIdx];
-        if (activeStage && cloud.state.targetTemp !== undefined) {
-          activeStage.temperature = cloud.state.targetTemp;
-        }
-      }
-
       const prevPower = acState.power;
       const newPower = cloud.state.power;
       const prevTemp = acState.temperature;
@@ -926,7 +917,17 @@ async function syncGreeHardwareState() {
         irLogs.unshift(logEntry);
         broadcastSSE('ir_blasted', logEntry);
       } else if (newTemp >= 16 && newTemp <= 30) {
-        acState.temperature = newTemp;
+        if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
+          const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
+          const activeStage = acState.multiStageTimer.stages?.[currIdx];
+          if (activeStage) {
+            acState.temperature = activeStage.temperature;
+          } else {
+            acState.temperature = newTemp;
+          }
+        } else {
+          acState.temperature = newTemp;
+        }
       }
       lastGreeTemp = newTemp;
 
@@ -1803,13 +1804,8 @@ app.post('/api/ac/step-timer', async (req: Request, res: Response) => {
     acState.displayLight !== currentActiveStage.displayLight ||
     (currentActiveStage.mode && acState.mode !== currentActiveStage.mode);
 
-  if (hasHardwareSettingsChanged) {
-    await applyStageSettings(currentActiveStage, startIdx, processedStages.length, isKeepingActiveStage ? 'auto_advance' : 'timer_start');
-  } else {
-    // Only duration or rules changed: persist and broadcast SSE immediately!
-    savePersistentStore();
-    broadcastSSE('ac_state_changed', acState);
-  }
+  // ALWAYS apply active stage hardware settings to the physical AC when step-timer is activated or updated!
+  await applyStageSettings(currentActiveStage, startIdx, processedStages.length, isKeepingActiveStage ? 'auto_advance' : 'timer_start');
 
   res.json({
     success: true,
