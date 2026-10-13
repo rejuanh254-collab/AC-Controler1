@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild src/api/index.ts --bundle --platform=node --target=node20 --format=esm --outfile=api/index.js",
+    "build": "vite build && node scripts/build-api.js",
     "start": "tsx server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

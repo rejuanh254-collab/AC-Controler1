@@ -1,3 +1,4 @@
+import { createRequire } from 'module'; const require = createRequire(import.meta.url);
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -43317,9 +43318,9 @@ var require_event_target = __commonJS({
        *     the listener would be automatically removed when invoked.
        * @public
        */
-      addEventListener(type, handler, options = {}) {
+      addEventListener(type, handler2, options = {}) {
         for (const listener of this.listeners(type)) {
-          if (!options[kForOnEventAttribute] && listener[kListener] === handler && !listener[kForOnEventAttribute]) {
+          if (!options[kForOnEventAttribute] && listener[kListener] === handler2 && !listener[kForOnEventAttribute]) {
             return;
           }
         }
@@ -43330,7 +43331,7 @@ var require_event_target = __commonJS({
               data: isBinary ? data : data.toString()
             });
             event[kTarget] = this;
-            callListener(handler, this, event);
+            callListener(handler2, this, event);
           };
         } else if (type === "close") {
           wrapper = function onClose(code, message) {
@@ -43340,7 +43341,7 @@ var require_event_target = __commonJS({
               wasClean: this._closeFrameReceived && this._closeFrameSent
             });
             event[kTarget] = this;
-            callListener(handler, this, event);
+            callListener(handler2, this, event);
           };
         } else if (type === "error") {
           wrapper = function onError(error) {
@@ -43349,19 +43350,19 @@ var require_event_target = __commonJS({
               message: error.message
             });
             event[kTarget] = this;
-            callListener(handler, this, event);
+            callListener(handler2, this, event);
           };
         } else if (type === "open") {
           wrapper = function onOpen() {
             const event = new Event("open");
             event[kTarget] = this;
-            callListener(handler, this, event);
+            callListener(handler2, this, event);
           };
         } else {
           return;
         }
         wrapper[kForOnEventAttribute] = !!options[kForOnEventAttribute];
-        wrapper[kListener] = handler;
+        wrapper[kListener] = handler2;
         if (options.once) {
           this.once(type, wrapper);
         } else {
@@ -43375,9 +43376,9 @@ var require_event_target = __commonJS({
        * @param {(Function|Object)} handler The listener to remove
        * @public
        */
-      removeEventListener(type, handler) {
+      removeEventListener(type, handler2) {
         for (const listener of this.listeners(type)) {
-          if (listener[kListener] === handler && !listener[kForOnEventAttribute]) {
+          if (listener[kListener] === handler2 && !listener[kForOnEventAttribute]) {
             this.removeListener(type, listener);
             break;
           }
@@ -44030,15 +44031,15 @@ var require_websocket = __commonJS({
           }
           return null;
         },
-        set(handler) {
+        set(handler2) {
           for (const listener of this.listeners(method)) {
             if (listener[kForOnEventAttribute]) {
               this.removeListener(method, listener);
               break;
             }
           }
-          if (typeof handler !== "function") return;
-          this.addEventListener(method, handler, {
+          if (typeof handler2 !== "function") return;
+          this.addEventListener(method, handler2, {
             [kForOnEventAttribute]: true
           });
         }
@@ -68376,7 +68377,7 @@ var smart_ac_data_default = {
     timerOnMinutes: 0,
     lastIrCommand: "SELF-CLEAN CYCLE CANCELLED",
     lastIrHex: "0xGR01010119CE",
-    lastUpdated: "2026-10-13T17:41:20.907Z",
+    lastUpdated: "2026-10-13T17:51:46.258Z",
     multiStageTimer: {
       enabled: false,
       currentStageIndex: 0,
@@ -69153,22 +69154,22 @@ var smart_ac_data_default = {
     }
   ],
   powerTelemetry: {
-    watts: 1107,
+    watts: 681,
     voltage: 228.4,
-    current: 4.85,
+    current: 2.98,
     tonnage: 1.5,
-    inverterLoadPercent: 73,
+    inverterLoadPercent: 37,
     unitRateBdt: 7,
     currency: "BDT",
-    todayKwh: 2e-3,
-    monthlyKwh: 6.614535555555351,
-    costBdt: 0.02,
-    monthlyCostBdt: 47.01270888888322,
+    todayKwh: 4e-3,
+    monthlyKwh: 6.616048888888685,
+    costBdt: 0.03,
+    monthlyCostBdt: 47.02330222221655,
     currentSessionStartTime: "2026-10-12T18:00:00.000Z",
-    currentSessionDurationMinutes: 1421,
-    currentSessionKwh: 246e-5,
-    currentSessionCostBdt: 0.01722,
-    todayRuntimeMinutes: 1421,
+    currentSessionDurationMinutes: 1431,
+    currentSessionKwh: 0.003973333333333333,
+    currentSessionCostBdt: 0.02781333333333333,
+    todayRuntimeMinutes: 1431,
     turnOnCountToday: 1,
     recentSessions: [
       {
@@ -69308,10 +69309,10 @@ var smart_ac_data_default = {
       {
         date: "2026-10-13",
         dayName: "\u0986\u099C (Today)",
-        totalRuntimeMinutes: 1421,
+        totalRuntimeMinutes: 1431,
         turnOnCount: 1,
-        totalKwh: 2e-3,
-        totalCostBdt: 0.02,
+        totalKwh: 4e-3,
+        totalCostBdt: 0.03,
         sessions: []
       },
       {
@@ -73641,9 +73642,11 @@ if (isDirectRun && !process.env.VERCEL) {
 var server_default = app;
 
 // src/api/index.ts
-var index_default = server_default;
+function handler(req, res) {
+  return server_default(req, res);
+}
 export {
-  index_default as default
+  handler as default
 };
 /*! Bundled license information:
 
