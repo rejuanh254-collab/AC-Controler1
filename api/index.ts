@@ -1,8 +1,13 @@
 import app from '../server';
 
-export default function handler(req: any, res: any) {
-  if (req.originalUrl && req.url !== req.originalUrl) {
-    req.url = req.originalUrl;
+function handler(req: any, res: any) {
+  let targetUrl = req.originalUrl || req.url || '/';
+  if (!targetUrl.startsWith('/api')) {
+    targetUrl = `/api${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
   }
+  req.url = targetUrl;
   return app(req, res);
 }
+
+export default handler;
+export { handler };

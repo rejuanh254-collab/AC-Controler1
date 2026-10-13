@@ -378,6 +378,7 @@ function savePersistentStore() {
         lastCheckedDate,
       },
     };
+    fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
     fs.writeFileSync(STORE_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save smart-ac store:', err);
