@@ -823,31 +823,12 @@ async function syncGreeHardwareState() {
         return;
       }
 
-      // If a multi-stage step timer is running, the active stage settings are strictly authoritative!
+      // If a multi-stage step timer is running, keep stage in sync passively without re-dispatching commands or beeping
       if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
         const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
         const activeStage = acState.multiStageTimer.stages?.[currIdx];
-        if (activeStage) {
-          const expectedTemp = activeStage.temperature;
-          const expectedFan = toGreeFanSpeed(activeStage.fanSpeed);
-          const currentCloudTemp = cloud.state.targetTemp;
-          const currentCloudFan = toGreeFanSpeed(cloud.state.fanSpeed);
-          const fanMatches =
-            currentCloudFan === expectedFan ||
-            (activeStage.fanSpeed === 'quiet' && (cloud.state.fanSpeed === 'quiet' || cloud.state.fanSpeed === 'low' || cloud.state.quiet));
-
-          // If the hardware state diverged from the stage, re-enforce the stage settings!
-          if (
-            currentCloudTemp !== expectedTemp ||
-            !fanMatches ||
-            (activeStage.displayLight !== undefined && cloud.state.light !== activeStage.displayLight)
-          ) {
-            console.log(
-              `[STAGE_ENFORCER] AC diverged from active Stage ${currIdx + 1} (${currentCloudTemp}°C vs expected ${expectedTemp}°C, Fan: ${currentCloudFan} vs ${expectedFan}). Re-enforcing stage settings.`
-            );
-            await applyStageSettings(activeStage, currIdx, acState.multiStageTimer.stages.length, 'auto_advance');
-            return;
-          }
+        if (activeStage && cloud.state.targetTemp !== undefined) {
+          activeStage.temperature = cloud.state.targetTemp;
         }
       }
 

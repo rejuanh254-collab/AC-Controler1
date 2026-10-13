@@ -71302,19 +71302,8 @@ async function syncGreeHardwareState() {
       if (acState.multiStageTimer && acState.multiStageTimer.enabled && !acState.multiStageTimer.paused) {
         const currIdx = acState.multiStageTimer.currentStageIndex ?? 0;
         const activeStage = acState.multiStageTimer.stages?.[currIdx];
-        if (activeStage) {
-          const expectedTemp = activeStage.temperature;
-          const expectedFan = toGreeFanSpeed(activeStage.fanSpeed);
-          const currentCloudTemp = cloud.state.targetTemp;
-          const currentCloudFan = toGreeFanSpeed(cloud.state.fanSpeed);
-          const fanMatches = currentCloudFan === expectedFan || activeStage.fanSpeed === "quiet" && (cloud.state.fanSpeed === "quiet" || cloud.state.fanSpeed === "low" || cloud.state.quiet);
-          if (currentCloudTemp !== expectedTemp || !fanMatches || activeStage.displayLight !== void 0 && cloud.state.light !== activeStage.displayLight) {
-            console.log(
-              `[STAGE_ENFORCER] AC diverged from active Stage ${currIdx + 1} (${currentCloudTemp}\xB0C vs expected ${expectedTemp}\xB0C, Fan: ${currentCloudFan} vs ${expectedFan}). Re-enforcing stage settings.`
-            );
-            await applyStageSettings(activeStage, currIdx, acState.multiStageTimer.stages.length, "auto_advance");
-            return;
-          }
+        if (activeStage && cloud.state.targetTemp !== void 0) {
+          activeStage.temperature = cloud.state.targetTemp;
         }
       }
       const prevPower = acState.power;

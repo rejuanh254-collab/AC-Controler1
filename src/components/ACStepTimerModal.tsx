@@ -37,8 +37,7 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
   const isRunning = Boolean(activeTimer && activeTimer.enabled);
   const activeStageIndex = (activeTimer?.currentStageIndex ?? (activeTimer?.currentStage ? activeTimer.currentStage - 1 : 0));
   const [hasUserModifiedStage1, setHasUserModifiedStage1] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // Initialize dynamic stages list: ALWAYS prioritize existing saved stages in activeTimer
   const [stages, setStages] = useState<MultiStageStep[]>(() => {
@@ -118,55 +117,11 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
     setStages(copy.map((s, idx) => ({ ...s, stageNumber: idx + 1 })));
   };
 
-  const saveLiveStages = async (stagesToSave: MultiStageStep[]) => {
-    if (!isRunning) return;
-    try {
-      setSaveStatus('saving');
-      const targetIdx = activeStageIndex;
-      const firstStage = stagesToSave[0];
-      const secondStage = stagesToSave[1];
-      await setStepTimer({
-        enabled: true,
-        targetStageIndex: targetIdx,
-        stages: stagesToSave,
-        finalAction,
-        stage3Temp,
-        health: enableHealth,
-        stage1: {
-          temperature: firstStage?.temperature ?? 24,
-          durationMinutes: firstStage?.durationMinutes ?? 120,
-        },
-        stage2Action: secondStage ? (secondStage.action === 'turn_off' ? 'turn_off' : 'change_temp') : (firstStage?.action === 'turn_off' ? 'turn_off' : 'change_temp'),
-        stage2: secondStage ? {
-          temperature: secondStage.temperature,
-          durationMinutes: secondStage.durationMinutes,
-        } : {
-          temperature: 26,
-          durationMinutes: 180,
-        },
-      });
-      setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 2500);
-    } catch {
-      setSaveStatus('error');
-    }
-  };
 
-  const updateStage = (index: number, updates: Partial<MultiStageStep>, immediate = false) => {
+  const updateStage = (index: number, updates: Partial<MultiStageStep>) => {
     const copy = [...stages];
     copy[index] = { ...copy[index], ...updates };
     setStages(copy);
-
-    if (isRunning) {
-      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-      if (immediate) {
-        saveLiveStages(copy);
-      } else {
-        autoSaveTimerRef.current = setTimeout(() => {
-          saveLiveStages(copy);
-        }, 700);
-      }
-    }
   };
 
   // Start timer from Stage 1 or update running timer
@@ -396,28 +351,11 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
               )}
             </div>
 
-            {/* Live Auto-Save Status Notification */}
+            {/* Instruction Notification */}
             <div className="flex items-center justify-between text-xs px-1 pt-1">
               <span className="text-[11px] text-slate-400">
-                {language === 'bn' ? '💡 স্টেজ টাইম পরিবর্তন করলে স্বয়ংক্রিয়ভাবে সেভ হয় এবং বর্তমান স্টেজ রিসেট হয় না' : '💡 Changes save live automatically without resetting current stage'}
+                {language === 'bn' ? '💡 স্টেজ নিজের মতো সাজিয়ে নিচে "টাইমার আপডেট করুন" বাটনে চাপুন' : '💡 Adjust settings and tap "Update Timer" below to apply'}
               </span>
-              {saveStatus === 'saving' && (
-                <span className="text-amber-400 font-medium flex items-center gap-1.5 text-[11px]">
-                  <RefreshCw className="w-3 h-3 animate-spin" />
-                  <span>{language === 'bn' ? 'সেভ হচ্ছে...' : 'Saving...'}</span>
-                </span>
-              )}
-              {saveStatus === 'saved' && (
-                <span className="text-emerald-400 font-bold flex items-center gap-1.5 text-[11px]">
-                  <Check className="w-3.5 h-3.5" />
-                  <span>{language === 'bn' ? '✓ লাইভ সেভ হয়েছে' : '✓ Saved live'}</span>
-                </span>
-              )}
-              {saveStatus === 'error' && (
-                <span className="text-rose-400 font-medium text-[11px]">
-                  {language === 'bn' ? 'সেভ হয়নি' : 'Error saving'}
-                </span>
-              )}
             </div>
           </div>
         )}
