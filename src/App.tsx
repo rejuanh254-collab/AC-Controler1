@@ -104,41 +104,6 @@ function ACAppContent() {
               onOpenVoiceModal={() => setShowVoiceModal(true)}
               onOpenCleanModal={() => setShowCleanModal(true)}
             />
-
-            {/* Quick Hint if Paired */}
-            {isPaired && (
-              <div
-                onClick={() => setActiveTab('control')}
-                className="cursor-pointer group bg-gradient-to-r from-cyan-950/30 via-slate-900 to-blue-950/30 hover:from-cyan-950/50 hover:to-blue-950/50 border border-cyan-500/20 hover:border-cyan-500/40 rounded-3xl p-4.5 flex items-center justify-between gap-4 shadow-lg transition-all"
-              >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
-                      {language === 'bn' ? 'Gree+ ও স্মার্ট রিমোট প্রস্তুত' : 'Gree+ & Remote Ready'}
-                    </h4>
-                    <p className="text-[11px] text-slate-400">
-                      {language === 'bn'
-                        ? 'কন্ট্রোল পেজে গিয়ে তাপমাত্রা ও মোড পরিবর্তন করুন।'
-                        : 'Tap here or on the Control tab to adjust temperature & modes.'}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveTab('control');
-                  }}
-                  className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95 shrink-0 flex items-center gap-1"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span>{language === 'bn' ? 'কন্ট্রোল পেজ ➔' : 'Control ➔'}</span>
-                </button>
-              </div>
-            )}
           </div>
         )}
 
