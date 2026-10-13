@@ -68399,7 +68399,7 @@ var smart_ac_data_default = {
           stageNumber: 2,
           temperature: 27,
           durationMinutes: 300,
-          action: "turn_off",
+          action: "change_temp",
           mode: "cool",
           fanSpeed: "low",
           displayLight: false
@@ -71630,6 +71630,14 @@ app.post("/api/ac/sync-client", (req, res) => {
     acState = { ...acState, ...clientState };
     if (clientState.multiStageTimer) {
       acState.multiStageTimer = clientState.multiStageTimer;
+      if (clientState.multiStageTimer.enabled && !clientState.multiStageTimer.paused) {
+        acState.power = true;
+        const activeIdx = clientState.multiStageTimer.currentStageIndex ?? 0;
+        const activeStage = clientState.multiStageTimer.stages?.[activeIdx];
+        if (activeStage && typeof activeStage.temperature === "number") {
+          acState.temperature = activeStage.temperature;
+        }
+      }
     }
   }
   if (clientConfig) {

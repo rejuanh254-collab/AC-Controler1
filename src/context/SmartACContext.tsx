@@ -181,14 +181,9 @@ const SmartACContext = createContext<SmartACContextType | null>(null);
 function mergeACState(prev: SmartACState, incoming: Partial<SmartACState>): SmartACState {
   let timer = prev.multiStageTimer;
 
-  // 1. If physical AC power was turned OFF (e.g. via physical remote or power off command), stop timer:
-  if (incoming.power === false) {
-    timer = prev.multiStageTimer
-      ? { ...prev.multiStageTimer, enabled: false, remainingMinutes: 0 }
-      : undefined;
-  } else if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
-    // 2. Client has an active running timer: CLIENT IS THE RUNNING MASTER!
-    // A cold or stale serverless container must NEVER turn off, rewind, or override the client's running timer!
+  // 1. If client has an active running timer: CLIENT IS THE RUNNING MASTER!
+  // Neither a stale poll reporting power:false nor a cold serverless container can ever disable, rewind, or override it!
+  if (prev.multiStageTimer?.enabled && !prev.multiStageTimer.paused) {
     timer = prev.multiStageTimer;
 
     // If server container is missing the running timer or has mismatched stage, passively sync client timer:
@@ -205,6 +200,11 @@ function mergeACState(prev: SmartACState, incoming: Partial<SmartACState>): Smar
         }),
       }).catch(() => {});
     }
+  } else if (incoming.power === false) {
+    // 2. Only if the timer is NOT running on the client, incoming power:false stops the timer:
+    timer = prev.multiStageTimer
+      ? { ...prev.multiStageTimer, enabled: false, remainingMinutes: 0 }
+      : undefined;
   } else if (incoming.multiStageTimer !== undefined) {
     timer = incoming.multiStageTimer;
   }
@@ -1409,11 +1409,13 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
         };
 
         let newRemaining = timer.remainingMinutes;
+        let newStageStartedAt = timer.stageStartedAt;
         if (targetIdx === (timer.currentStageIndex ?? 0)) {
           if (options.deltaMinutes !== undefined) {
             newRemaining = Math.max(1, (timer.remainingMinutes || 0) + options.deltaMinutes);
           } else if (options.durationMinutes !== undefined) {
             newRemaining = options.durationMinutes;
+            newStageStartedAt = new Date().toISOString(); // Reset start window so elapsed timer doesn't immediately expire!
           }
         }
 
@@ -1421,6 +1423,7 @@ export const SmartACProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ...timer,
           stages: updatedStages,
           remainingMinutes: newRemaining,
+          stageStartedAt: newStageStartedAt,
         };
 
         const merged: SmartACState = {

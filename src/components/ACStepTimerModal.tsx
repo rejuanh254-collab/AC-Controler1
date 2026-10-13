@@ -890,8 +890,20 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
                 className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all hover:scale-102 active:scale-98"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>{language === 'bn' ? 'স্টেপ টাইমার চালু করুন (স্টেজ ১)' : 'Start Step Timer (Stage 1)'}</span>
+                <span>{language === 'bn' ? 'স্টেজ ১ থেকে চালু' : 'Start Stage 1'}</span>
               </button>
+
+              {stages.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleStartAtStage(1)}
+                  className="py-3 px-3.5 bg-purple-500/25 hover:bg-purple-500/40 text-purple-200 border border-purple-500/40 font-bold rounded-2xl text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm shrink-0"
+                  title={language === 'bn' ? 'সরাসরি স্টেজ ২ থেকে টাইমার চালু করুন' : 'Start directly from Stage 2'}
+                >
+                  <Play className="w-3.5 h-3.5 fill-current text-purple-400" />
+                  <span>{language === 'bn' ? 'স্টেজ ২ থেকে চালু' : 'Start Stage 2'}</span>
+                </button>
+              )}
             </>
           )}
         </div>

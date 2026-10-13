@@ -1209,6 +1209,14 @@ app.post('/api/ac/sync-client', (req: Request, res: Response) => {
     acState = { ...acState, ...clientState };
     if (clientState.multiStageTimer) {
       acState.multiStageTimer = clientState.multiStageTimer;
+      if (clientState.multiStageTimer.enabled && !clientState.multiStageTimer.paused) {
+        acState.power = true;
+        const activeIdx = clientState.multiStageTimer.currentStageIndex ?? 0;
+        const activeStage = clientState.multiStageTimer.stages?.[activeIdx];
+        if (activeStage && typeof activeStage.temperature === 'number') {
+          acState.temperature = activeStage.temperature;
+        }
+      }
     }
   }
   if (clientConfig) {

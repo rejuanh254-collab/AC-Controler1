@@ -48,7 +48,7 @@
           "stageNumber": 2,
           "temperature": 27,
           "durationMinutes": 300,
-          "action": "turn_off",
+          "action": "change_temp",
           "mode": "cool",
           "fanSpeed": "low",
           "displayLight": false
