@@ -73635,7 +73635,7 @@ if (!process.env.VERCEL) {
 }
 var server_default = app;
 
-// api/index.ts
+// src/api/index.ts
 function handler(req, res) {
   let targetUrl = req.originalUrl || req.url || "/";
   if (!targetUrl.startsWith("/api")) {

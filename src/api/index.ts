@@ -1,4 +1,4 @@
-import app from '../server';
+import app from '../../server.js';
 
 function handler(req: any, res: any) {
   let targetUrl = req.originalUrl || req.url || '/';
