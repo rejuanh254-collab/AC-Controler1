@@ -56,8 +56,8 @@
       ],
       "finalAction": "turn_off",
       "stage3Temp": 27,
-      "startedAt": "2026-10-08T16:33:31.026Z",
-      "stageStartedAt": "2026-10-08T16:33:31.026Z",
+      "startedAt": "",
+      "stageStartedAt": "",
       "paused": false,
       "stage1": {
         "temperature": 25,

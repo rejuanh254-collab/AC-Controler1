@@ -1737,8 +1737,18 @@ app.post('/api/ac/step-timer', async (req: Request, res: Response) => {
     const elapsedMs = Math.max(0, Date.now() - new Date(stageStartedAt).getTime());
     const elapsedMins = elapsedMs / 60000;
 
-    // The new remaining minutes is the updated duration minus the already elapsed time!
-    remainingMinutes = Math.max(0, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
+    // If elapsed time has exceeded stage duration (or stale timestamp), restart stage window so the timer never dies on edit!
+    if (elapsedMins >= currentActiveStage.durationMinutes) {
+      stageStartedAt = nowIso;
+      remainingMinutes = currentActiveStage.durationMinutes;
+    } else {
+      // Keep remaining duration with a minimum of at least 1 minute
+      remainingMinutes = Math.max(1, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
+    }
+  } else {
+    startedAt = nowIso;
+    stageStartedAt = nowIso;
+    remainingMinutes = currentActiveStage.durationMinutes;
   }
 
   const fAct = finalAction === 'keep_running' ? ('keep_running' as const) : finalAction === 'change_temp' ? ('change_temp' as const) : ('turn_off' as const);
@@ -1832,7 +1842,12 @@ app.post('/api/ac/step-timer/adjust-time', async (req: Request, res: Response) =
     if (targetIdx === currentIdx && timer.stageStartedAt) {
       const elapsedMs = Math.max(0, Date.now() - new Date(timer.stageStartedAt).getTime());
       const elapsedMins = elapsedMs / 60000;
-      timer.remainingMinutes = Math.max(1, Math.round((newDur - elapsedMins) * 10) / 10);
+      if (elapsedMins >= newDur) {
+        timer.stageStartedAt = new Date().toISOString();
+        timer.remainingMinutes = newDur;
+      } else {
+        timer.remainingMinutes = Math.max(1, Math.round((newDur - elapsedMins) * 10) / 10);
+      }
     }
   }
 

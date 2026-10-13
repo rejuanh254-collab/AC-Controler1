@@ -68407,8 +68407,8 @@ var smart_ac_data_default = {
       ],
       finalAction: "turn_off",
       stage3Temp: 27,
-      startedAt: "2026-10-08T16:33:31.026Z",
-      stageStartedAt: "2026-10-08T16:33:31.026Z",
+      startedAt: "",
+      stageStartedAt: "",
       paused: false,
       stage1: {
         temperature: 25,
@@ -72041,7 +72041,16 @@ app.post("/api/ac/step-timer", async (req, res) => {
     stageStartedAt = prevTimer.stageStartedAt || nowIso;
     const elapsedMs = Math.max(0, Date.now() - new Date(stageStartedAt).getTime());
     const elapsedMins = elapsedMs / 6e4;
-    remainingMinutes = Math.max(0, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
+    if (elapsedMins >= currentActiveStage.durationMinutes) {
+      stageStartedAt = nowIso;
+      remainingMinutes = currentActiveStage.durationMinutes;
+    } else {
+      remainingMinutes = Math.max(1, Math.round((currentActiveStage.durationMinutes - elapsedMins) * 10) / 10);
+    }
+  } else {
+    startedAt = nowIso;
+    stageStartedAt = nowIso;
+    remainingMinutes = currentActiveStage.durationMinutes;
   }
   const fAct = finalAction === "keep_running" ? "keep_running" : finalAction === "change_temp" ? "change_temp" : "turn_off";
   const timer = {
@@ -72106,7 +72115,12 @@ app.post("/api/ac/step-timer/adjust-time", async (req, res) => {
     if (targetIdx === currentIdx && timer.stageStartedAt) {
       const elapsedMs = Math.max(0, Date.now() - new Date(timer.stageStartedAt).getTime());
       const elapsedMins = elapsedMs / 6e4;
-      timer.remainingMinutes = Math.max(1, Math.round((newDur - elapsedMins) * 10) / 10);
+      if (elapsedMins >= newDur) {
+        timer.stageStartedAt = (/* @__PURE__ */ new Date()).toISOString();
+        timer.remainingMinutes = newDur;
+      } else {
+        timer.remainingMinutes = Math.max(1, Math.round((newDur - elapsedMins) * 10) / 10);
+      }
     }
   }
   let needApply = false;

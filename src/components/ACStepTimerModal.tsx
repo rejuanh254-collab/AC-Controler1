@@ -136,7 +136,7 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
           temperature: firstStage?.temperature ?? 24,
           durationMinutes: firstStage?.durationMinutes ?? 120,
         },
-        stage2Action: firstStage?.action === 'turn_off' ? 'turn_off' : secondStage ? 'change_temp' : 'turn_off',
+        stage2Action: secondStage ? (secondStage.action === 'turn_off' ? 'turn_off' : 'change_temp') : (firstStage?.action === 'turn_off' ? 'turn_off' : 'change_temp'),
         stage2: secondStage ? {
           temperature: secondStage.temperature,
           durationMinutes: secondStage.durationMinutes,
@@ -187,7 +187,7 @@ export const ACStepTimerModal: React.FC<ACStepTimerModalProps> = ({ onClose }) =
         temperature: firstStage?.temperature ?? 24,
         durationMinutes: firstStage?.durationMinutes ?? 120,
       },
-      stage2Action: firstStage?.action === 'turn_off' ? 'turn_off' : secondStage ? 'change_temp' : 'turn_off',
+      stage2Action: secondStage ? (secondStage.action === 'turn_off' ? 'turn_off' : 'change_temp') : (firstStage?.action === 'turn_off' ? 'turn_off' : 'change_temp'),
       stage2: secondStage ? {
         temperature: secondStage.temperature,
         durationMinutes: secondStage.durationMinutes,
