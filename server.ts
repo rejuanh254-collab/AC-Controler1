@@ -45,9 +45,11 @@ const STORE_FILE = process.env.VERCEL
 
 const app = express();
 let ai: any = null;
-try {
-  ai = new GoogleGenAI();
-} catch {}
+if (process.env.GEMINI_API_KEY) {
+  try {
+    ai = new GoogleGenAI();
+  } catch {}
+}
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
@@ -3614,7 +3616,14 @@ async function startServer() {
   });
 }
 
-if (!process.env.VERCEL) {
+const isDirectRun = Boolean(
+  process.argv[1] && (
+    process.argv[1].endsWith('server.ts') ||
+    process.argv[1].endsWith('server.js')
+  )
+);
+
+if (isDirectRun && !process.env.VERCEL) {
   startServer();
 }
 

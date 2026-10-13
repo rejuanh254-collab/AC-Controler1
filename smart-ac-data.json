@@ -7,7 +7,7 @@
     "location": "Master Bedroom",
     "isOnline": true,
     "power": true,
-    "temperature": 25,
+    "temperature": 27,
     "mode": "cool",
     "fanSpeed": "low",
     "swingV": "middle",
@@ -15,7 +15,7 @@
     "turbo": false,
     "eco": false,
     "sleep": false,
-    "displayLight": true,
+    "displayLight": false,
     "ionFilter": true,
     "autoClean": false,
     "filterCleanHours": 0,
@@ -26,12 +26,12 @@
     "timerOnMinutes": 0,
     "lastIrCommand": "SELF-CLEAN CYCLE CANCELLED",
     "lastIrHex": "0xGR01010119CE",
-    "lastUpdated": "2026-10-08T16:49:02.776Z",
+    "lastUpdated": "2026-10-13T17:41:20.907Z",
     "multiStageTimer": {
-      "enabled": true,
+      "enabled": false,
       "currentStageIndex": 0,
       "currentStage": 1,
-      "remainingMinutes": 44.6,
+      "remainingMinutes": 0,
       "stages": [
         {
           "id": "stg-1",
@@ -287,13 +287,13 @@
     }
   ],
   "lastActiveACSettings": {
-    "temperature": 25,
+    "temperature": 27,
     "mode": "cool",
     "fanSpeed": "low",
     "quiet": false,
     "turbo": false,
     "eco": false,
-    "displayLight": true,
+    "displayLight": false,
     "ionFilter": true,
     "health": true,
     "swingV": "middle",
@@ -803,23 +803,23 @@
     }
   ],
   "powerTelemetry": {
-    "watts": 1022,
+    "watts": 1107,
     "voltage": 228.4,
-    "current": 4.47,
+    "current": 4.85,
     "tonnage": 1.5,
-    "inverterLoadPercent": 66,
+    "inverterLoadPercent": 73,
     "unitRateBdt": 7,
     "currency": "BDT",
-    "todayKwh": 0.504,
-    "monthlyKwh": 6.612075555555352,
-    "costBdt": 3.53,
-    "monthlyCostBdt": 46.99548888888322,
-    "currentSessionStartTime": "2026-10-08T16:30:40.835Z",
-    "currentSessionDurationMinutes": 18,
-    "currentSessionKwh": 0.3708177777777778,
-    "currentSessionCostBdt": 2.595724444444453,
-    "todayRuntimeMinutes": 198,
-    "turnOnCountToday": 2,
+    "todayKwh": 0.002,
+    "monthlyKwh": 6.614535555555351,
+    "costBdt": 0.02,
+    "monthlyCostBdt": 47.01270888888322,
+    "currentSessionStartTime": "2026-10-12T18:00:00.000Z",
+    "currentSessionDurationMinutes": 1421,
+    "currentSessionKwh": 0.00246,
+    "currentSessionCostBdt": 0.01722,
+    "todayRuntimeMinutes": 1421,
+    "turnOnCountToday": 1,
     "recentSessions": [
       {
         "id": "sess-1791476855770",
@@ -956,9 +956,18 @@
     ],
     "dailyHistory": [
       {
-        "date": "2026-10-08",
+        "date": "2026-10-13",
         "dayName": "আজ (Today)",
-        "totalRuntimeMinutes": 198,
+        "totalRuntimeMinutes": 1421,
+        "turnOnCount": 1,
+        "totalKwh": 0.002,
+        "totalCostBdt": 0.02,
+        "sessions": []
+      },
+      {
+        "date": "2026-10-08",
+        "dayName": "08 অক্টোবর",
+        "totalRuntimeMinutes": 1440,
         "turnOnCount": 2,
         "totalKwh": 0.504,
         "totalCostBdt": 3.53,
@@ -1378,17 +1387,8 @@
         "totalKwh": 3.25,
         "totalCostBdt": 27.63,
         "sessions": []
-      },
-      {
-        "date": "2026-09-05",
-        "dayName": "05 সেপ্টেম্বর",
-        "totalRuntimeMinutes": 340,
-        "turnOnCount": 2,
-        "totalKwh": 2.3,
-        "totalCostBdt": 19.55,
-        "sessions": []
       }
     ],
-    "lastCheckedDate": "2026-10-08"
+    "lastCheckedDate": "2026-10-13"
   }
 }

@@ -70630,9 +70630,11 @@ var BUNDLED_STORE_FILE = path2.join(appDir, "smart-ac-data.json");
 var STORE_FILE = process.env.VERCEL ? path2.join("/tmp", "smart-ac-data.json") : BUNDLED_STORE_FILE;
 var app = (0, import_express.default)();
 var ai = null;
-try {
-  ai = new GoogleGenAI2();
-} catch {
+if (process.env.GEMINI_API_KEY) {
+  try {
+    ai = new GoogleGenAI2();
+  } catch {
+  }
 }
 var PORT = Number(process.env.PORT) || 3e3;
 app.use(import_express.default.json());
@@ -73630,7 +73632,10 @@ async function startServer() {
     console.log(`\u2744\uFE0F CoolHome AC Smart Controller Server running on http://0.0.0.0:${PORT}`);
   });
 }
-if (!process.env.VERCEL) {
+var isDirectRun = Boolean(
+  process.argv[1] && (process.argv[1].endsWith("server.ts") || process.argv[1].endsWith("server.js"))
+);
+if (isDirectRun && !process.env.VERCEL) {
   startServer();
 }
 var server_default = app;
